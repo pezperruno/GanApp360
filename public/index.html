@@ -1,89 +1,1366 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/11.6.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/11.6.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GanApp360 - Sistema de Gestión Ganadera</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+</head>
+<body>
+    <div id="loginContainer" class="login-container">
+        <div class="login-card">
+            <div class="logo-container">
+                <svg width="60" height="60" viewBox="0 0 100 100">
+                    <rect x="0" y="0" width="100" height="100" rx="15" fill="#4caf50" />
+                    <text x="15" y="45" font-family="Arial" font-weight="bold" font-size="30" fill="white">G</text>
+                    <text x="15" y="75" font-family="Arial" font-weight="bold" font-size="30" fill="white">A</text>
+                    <text x="40" y="60" font-family="Arial" font-weight="bold" font-size="22" fill="white">360</text>
+                </svg>
+                <h1>GanApp360</h1>
+            </div>
+            <div id="loginForm" class="login-form">
+                <h2>Iniciar Sesión</h2>
+                <div class="form-group">
+                    <label for="loginEmail">Correo electrónico</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="form-error" id="loginError"></div>
+                <button type="button" id="loginButton" class="btn-primary">Iniciar Sesión</button>
+                <p class="form-link">¿No tienes cuenta? <a href="#" id="showRegister">Regístrate</a></p>
+            </div>
+            
+            <div id="registerForm" class="login-form" style="display: none;">
+                <h2>Registro</h2>
+                <div class="form-group">
+                    <label for="registerName">Nombre</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Correo electrónico</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Contraseña</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirmar contraseña</label>
+                    <input type="password" id="registerConfirmPassword" required>
+                </div>
+                <div class="form-error" id="registerError"></div>
+                <button type="button" id="registerButton" class="btn-primary">Registrarse</button>
+                <p class="form-link">¿Ya tienes cuenta? <a href="#" id="showLogin">Inicia sesión</a></p>
+            </div>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+    
+    <div id="appContainer" class="app-container" style="display: none;">
+        <div class="app-container">
+            <aside class="sidebar">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 100 100">
+                        <rect x="0" y="0" width="100" height="100" rx="15" fill="#4caf50" />
+                        <text x="15" y="45" font-family="Arial" font-weight="bold" font-size="30" fill="white">G</text>
+                        <text x="15" y="75" font-family="Arial" font-weight="bold" font-size="30" fill="white">A</text>
+                        <text x="40" y="60" font-family="Arial" font-weight="bold" font-size="22" fill="white">360</text>
+                    </svg>
+                    <h1>GanApp360</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li data-section="home" class="active">
+                            <i class="fas fa-home"></i> Inicio
+                        </li>
+                        <li data-section="fincas">
+                            <i class="fas fa-tractor"></i> Fincas
+                        </li>
+                        <li data-section="animals">
+                            <i class="fas fa-cow"></i> Animales
+                        </li>
+                        <li data-section="feeding">
+                            <i class="fas fa-utensils"></i> Alimentación
+                        </li>
+                        <li data-section="finances">
+                            <i class="fas fa-wallet"></i> Finanzas
+                        </li>
+                        <li data-section="activities">
+                            <i class="fas fa-clipboard-list"></i> Actividades
+                        </li>
+                        <li data-section="inventory">
+                            <i class="fas fa-boxes"></i> Inventario
+                        </li>
+                        <li data-section="reports">
+                            <i class="fas fa-chart-bar"></i> Informes
+                        </li>
+                        <li data-section="settings">
+                            <i class="fas fa-cog"></i> Configuración
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+            <main class="content">
+                <section id="home" class="section-content active">
+                    <div class="home-welcome-message">
+                        <h2>¡Bienvenido a GanApp360!</h2>
+                        <p>Sistema integral para la gestión eficiente de su explotación ganadera. Acceda rápidamente a las herramientas más utilizadas o consulte el resumen de su actividad reciente.</p>
+                        <button class="btn-primary" id="goToSettingsBtn">Configurar su cuenta</button>
+                    </div>
+                    
+                    <div class="quick-stats">
+                        <div class="quick-stat-card">
+                            <i class="fas fa-cow"></i>
+                            <div class="stat-content">
+                                <h3>Animales Registrados</h3>
+                                <p id="animalCount">0</p>
+                            </div>
+                        </div>
+                        <div class="quick-stat-card">
+                            <i class="fas fa-tractor"></i>
+                            <div class="stat-content">
+                                <h3>Fincas Activas</h3>
+                                <p id="fincaCount">0</p>
+                            </div>
+                        </div>
+                        <div class="quick-stat-card">
+                            <i class="fas fa-wallet"></i>
+                            <div class="stat-content">
+                                <h3>Balance Actual</h3>
+                                <p id="quickBalance">€0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="home-grid">
+                        <div class="home-card">
+                            <h2>Accesos Rápidos</h2>
+                            <div class="quick-access-grid">
+                                <div class="quick-access-item" data-section="animals">
+                                    <i class="fas fa-cow"></i>
+                                    <span>Animales</span>
+                                </div>
+                                <div class="quick-access-item" data-section="feeding">
+                                    <i class="fas fa-utensils"></i>
+                                    <span>Alimentación</span>
+                                </div>
+                                <div class="quick-access-item" data-section="activities">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <span>Actividades</span>
+                                </div>
+                                <div class="quick-access-item" data-section="finances">
+                                    <i class="fas fa-wallet"></i>
+                                    <span>Finanzas</span>
+                                </div>
+                                <div class="quick-access-item" data-section="fincas">
+                                    <i class="fas fa-tractor"></i>
+                                    <span>Fincas</span>
+                                </div>
+                                <div class="quick-access-item" data-section="inventory">
+                                    <i class="fas fa-boxes"></i>
+                                    <span>Inventario</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+                <section id="animals" class="section-content">
+                    <h2>Gestión de Animales</h2>
+                    <div class="tab-header" style="margin-bottom: 20px;">
+                        <button class="tab-btn active" data-tab="newAnimal">Nuevo Animal</button>
+                        <button class="tab-btn" data-tab="birthRegistration">Registro de Nacimiento</button>
+                        <button class="tab-btn" data-tab="allRecords">Todos los Registros</button>
+                    </div>
+
+                    <div class="tab-content active" id="newAnimal">
+                        <div class="actions-bar">
+                            <button class="btn-primary" id="addAnimalBtn">
+                                <i class="fas fa-plus"></i> Nuevo Animal
+                            </button>
+                        </div>
+                        
+                        <div class="animal-cards">
+                            <!-- Animal cards will be dynamically generated -->
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="birthRegistration">
+                        <div class="actions-bar">
+                            <button class="btn-primary" id="registerBirthBtn">
+                                <i class="fas fa-baby"></i> Registro de Nacimiento
+                            </button>
+                        </div>
+                        
+                        <button class="btn-danger" id="deleteAllAnimalsBtn" style="margin-left: auto;">
+                            <i class="fas fa-trash"></i> Borrar todos los registros
+                        </button>
+                        
+                        <div class="animal-cards">
+                            <!-- Birth registration cards will be dynamically generated -->
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="allRecords">
+                        <div class="actions-bar">
+                            <button class="btn-primary" id="exportAllAnimalsBtn">
+                                <i class="fas fa-download"></i> Guardar todos los registros
+                            </button>
+                        </div>
+                        <div class="animal-cards">
+                            <!-- All animal records will be dynamically loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Modal para añadir/editar animal -->
+                    <div id="animalModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <h2>Añadir Nuevo Animal</h2>
+                            <form id="animalForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>ID del Animal</label>
+                                        <input type="text" id="animalId" placeholder="AN-XXX">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Raza</label>
+                                        <input type="text" id="breed" placeholder="Raza">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Categoría</label>
+                                        <select id="animalCategory">
+                                            <option value="vacuno">Vacuno</option>
+                                            <option value="porcino">Porcino</option>
+                                            <option value="caprino">Caprino</option>
+                                            <option value="ovino">Ovino</option>
+                                            <option value="equino">Equino</option>
+                                            <option value="ave">Ave</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sexo</label>
+                                        <select id="animalSex">
+                                            <option value="macho">Macho</option>
+                                            <option value="hembra">Hembra</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Edad</label>
+                                        <input type="number" id="age" placeholder="Edad en años">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Peso</label>
+                                        <input type="number" id="weight" placeholder="Peso en kg">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Fotografía</label>
+                                        <input type="file" id="animalPhoto">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Finca</label>
+                                        <select id="animalFinca">
+                                            <option value="">Seleccionar finca...</option>
+                                            <!-- Las opciones se cargarán dinámicamente -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-tabs">
+                                    <div class="tab-header">
+                                        <button type="button" class="tab-btn active" data-tab="health">Salud</button>
+                                        <button type="button" class="tab-btn" data-tab="production">Producción</button>
+                                    </div>
+                                    <div class="tab-content active" id="health">
+                                        <h3>Registro de Salud</h3>
+                                        <div class="form-group">
+                                            <label>Vacunaciones</label>
+                                            <div class="vacs-container" id="vaccinationsList">
+                                                <div class="vac-item">
+                                                    <input type="date">
+                                                    <input type="text" placeholder="Tipo de vacuna">
+                                                    <button type="button" class="btn-icon remove-vac">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn-secondary" id="addVaccination">
+                                                <i class="fas fa-plus"></i> Añadir Vacunación
+                                            </button>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Historial Médico</label>
+                                            <textarea id="medicalHistory" placeholder="Ingrese el historial médico"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="tab-content" id="production">
+                                        <h3>Registro de Producción</h3>
+                                        <div class="form-group">
+                                            <label>Tipo de Producción</label>
+                                            <select id="productionType">
+                                                <option value="milk">Leche</option>
+                                                <option value="meat">Carne</option>
+                                                <option value="breeding">Cría</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group" id="milkProductionFields">
+                                            <label>Producción de Leche (litros diarios)</label>
+                                            <input type="number" id="milkProduction" placeholder="Litros">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Notas de Producción</label>
+                                            <textarea id="productionNotes" placeholder="Notas adicionales"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelAnimal">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Guardar Animal</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal para registro de nacimiento -->
+                    <div id="birthRegistrationModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal close-birth-modal">&times;</span>
+                            <h2>Registro de Nacimiento</h2>
+                            <form id="birthRegistrationForm">
+                                <div class="form-group">
+                                    <label>ID del Animal</label>
+                                    <input type="text" id="birthAnimalId" placeholder="AN-XXX" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Raza</label>
+                                    <input type="text" id="birthBreed" placeholder="Raza" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Categoría</label>
+                                        <select id="birthAnimalCategory" required>
+                                            <option value="vacuno">Vacuno</option>
+                                            <option value="porcino">Porcino</option>
+                                            <option value="caprino">Caprino</option>
+                                            <option value="ovino">Ovino</option>
+                                            <option value="equino">Equino</option>
+                                            <option value="ave">Ave</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Sexo</label>
+                                        <select id="birthAnimalSex" required>
+                                            <option value="macho">Macho</option>
+                                            <option value="hembra">Hembra</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Fecha de Nacimiento</label>
+                                    <input type="date" id="birthDateInput" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Crotal de la Madre</label>
+                                    <input type="text" id="birthMotherCrotal" placeholder="ID de la madre" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Peso al Nacer (kg)</label>
+                                    <input type="number" id="birthWeightInput" placeholder="Peso en kg" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Condición al Nacer</label>
+                                    <select id="birthConditionInput">
+                                        <option value="normal">Normal</option>
+                                        <option value="complicado">Parto Complicado</option>
+                                        <option value="cesarea">Cesárea</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Observaciones</label>
+                                    <textarea id="birthNotesInput" placeholder="Observaciones durante el nacimiento"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Finca</label>
+                                    <select id="birthFinca">
+                                        <option value="">Seleccionar finca...</option>
+                                        <!-- Las opciones se cargarán dinámicamente -->
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelBirth">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Registrar Nacimiento</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div id="moveAnimalModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal close-move-modal">&times;</span>
+                            <h2>Mover Animal a Otra Finca</h2>
+                            <form id="moveAnimalForm">
+                                <div class="form-group">
+                                    <label>Animal a mover:</label>
+                                    <span id="moveAnimalId"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>Finca de destino:</label>
+                                    <select id="destinationFarm" required>
+                                        <!-- Opciones de fincas se cargarán dinámicamente -->
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelMoveAnimal">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Mover Animal</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="feeding" class="section-content">
+                    <h2>Gestión de Alimentación</h2>
+                    
+                    <div class="finance-summary">
+                        <div class="summary-card">
+                            <div class="summary-icon savings">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="summary-details">
+                                <h3>Recordatorios</h3>
+                                <p class="summary-amount" id="feedReminders">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="finance-grid">
+                        <div class="finance-card">
+                            <div class="card-header">
+                                <h3>Registros de Alimentación</h3>
+                                <button class="btn-primary" id="addFeedingBtn">
+                                    <i class="fas fa-plus"></i> Nuevo Registro
+                                </button>
+                                <button class="btn-danger" id="deleteAllFeedingBtn">
+                                    <i class="fas fa-trash"></i> Borrar todos los registros
+                                </button>
+                            </div>
+                            <div class="transactions-table-container">
+                                <table class="transactions-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Tipo de Pienso</th>
+                                            <th>Cantidad (kg)</th>
+                                            <th>Grupo de Animales</th>
+                                            <th>Notas</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="feedingTableBody">
+                                        <!-- Los registros se cargarán dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="finance-card">
+                            <div class="card-header">
+                                <h3>Recordatorios de Alimentación</h3>
+                                <button class="btn-primary" id="addReminderBtn">
+                                    <i class="fas fa-plus"></i> Nuevo Recordatorio
+                                </button>
+                            </div>
+                            <div id="remindersContainer">
+                                <!-- Los recordatorios se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="finance-card">
+                        <h3>Consejos Personalizados de Alimentación</h3>
+                        <div id="feedingTips">
+                            <!-- Aquí se mostrarán los consejos -->
+                        </div>
+                    </div>
+                    
+                    <!-- Modal para añadir/editar registro de alimentación -->
+                    <div id="feedingModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <h2 id="feedingModalTitle">Nuevo Registro de Alimentación</h2>
+                            <form id="feedingForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Fecha*</label>
+                                        <input type="date" id="feedingDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tipo de Alimentación*</label>
+                                        <select id="feedType" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="concentrado">Pienso en tacos</option>
+                                            <option value="forraje">Pienso de arranque</option>
+                                            <option value="grano">Pienso granulado</option>
+                                            <option value="pienso_especial">Pienso balanceado compuesto</option>
+                                            <option value="otro">Pienso húmedo</option>
+                                            <option value="paja">Paja</option>
+                                            <option value="otro">Otro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Cantidad (kg)*</label>
+                                        <input type="number" id="feedAmount" step="0.1" min="0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Grupo de Animales*</label>
+                                        <select id="animalGroup" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="todos">Todos</option>
+                                            <option value="vacuno">Vacuno</option>
+                                            <option value="porcino">Porcino</option>
+                                            <option value="caprino">Caprino</option>
+                                            <option value="ovino">Ovino</option>
+                                            <option value="equino">Equino</option>
+                                            <option value="aves">Aves</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Notas</label>
+                                    <textarea id="feedingNotes" placeholder="Observaciones adicionales"></textarea>
+                                </div>
+                                <input type="hidden" id="feedingId">
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelFeeding">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal para añadir/editar recordatorio -->
+                    <div id="reminderModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <h2>Nuevo Recordatorio</h2>
+                            <form id="reminderForm">
+                                <div class="form-group">
+                                    <label>Título*</label>
+                                    <input type="text" id="reminderTitle" required>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Fecha*</label>
+                                        <input type="date" id="reminderDate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Hora*</label>
+                                        <input type="time" id="reminderTime" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Grupo de Animales</label>
+                                    <select id="reminderAnimalGroup">
+                                        <option value="todos">Todos</option>
+                                        <option value="vacuno">Vacuno</option>
+                                        <option value="porcino">Porcino</option>
+                                        <option value="crias">Crías</option>
+                                        <option value="adultos">Adultos</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Descripción</label>
+                                    <textarea id="reminderDescription" placeholder="Detalles adicionales"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Repetir</label>
+                                    <select id="reminderRepeat">
+                                        <option value="once">Una vez</option>
+                                        <option value="daily">Diariamente</option>
+                                        <option value="weekly">Semanalmente</option>
+                                    </select>
+                                </div>
+                                <input type="hidden" id="reminderId">
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelReminder">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="activities" class="section-content">
+                    <h2>Gestión de Actividades</h2>
+                    <div class="actions-bar">
+                        <button class="btn-primary" id="addActivityBtn">
+                            <i class="fas fa-plus"></i> Nueva Actividad
+                        </button>
+                        <button class="btn-danger" id="deleteAllActivitiesBtn">
+                            <i class="fas fa-trash"></i> Borrar todos los registros
+                        </button>
+                    </div>
+                    
+                    <div class="transactions-table-container">
+                        <table class="transactions-table" id="activitiesTable">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha límite</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activitiesTableBody">
+                                <!-- Las actividades se cargarán dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Modal para añadir/editar actividad -->
+                    <div id="activityModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <h2 id="activityModalTitle">Nueva Actividad</h2>
+                            <form id="activityForm">
+                                <div class="form-group">
+                                    <label>Nombre de la actividad*</label>
+                                    <input type="text" id="activityName" placeholder="Nombre de la actividad" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Descripción</label>
+                                    <textarea id="activityDescription" placeholder="Descripción detallada"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Fecha límite*</label>
+                                        <input type="date" id="activityDueDate" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <input type="checkbox" id="activityCompleted">
+                                    <label for="activityCompleted">Marcar como completada</label>
+                                </div>
+                                <input type="hidden" id="activityId">
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelActivity">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Guardar Actividad</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="finances" class="section-content">
+                    <h2>Gestión de Finanzas</h2>
+                    <div class="actions-bar">
+                    </div>
+                    
+                    <div class="finance-summary">
+                        <div class="summary-card">
+                            <div class="summary-icon">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="summary-details">
+                                <h3>Ingresos</h3>
+                                <p class="summary-amount" id="totalIncome">€0.00</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon expenses">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                            <div class="summary-details">
+                                <h3>Gastos</h3>
+                                <p class="summary-amount" id="totalExpenses">€0.00</p>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon balance">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <div class="summary-details">
+                                <h3>Balance</h3>
+                                <p class="summary-amount" id="totalBalance">€0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="finance-grid">
+                        <div class="finance-card">
+                            <div class="card-header">
+                                <h3>Transacciones Recientes</h3>
+                                <button class="btn-primary" id="addTransactionBtn">
+                                    <i class="fas fa-plus"></i> Nueva Transacción
+                                </button>
+                            </div>
+                            <div class="transactions-table-container">
+                                <table class="transactions-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Concepto</th>
+                                            <th>Categoría</th>
+                                            <th>Tipo</th>
+                                            <th>Importe</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactionsTableBody">
+                                        <!-- Las transacciones se cargarán dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="finance-card">
+                            <div class="card-header">
+                                <h3>Presupuestos</h3>
+                                <button class="btn-primary" id="addBudgetBtn">
+                                    <i class="fas fa-plus"></i> Nuevo Presupuesto
+                                </button>
+                            </div>
+                            <div class="budgets-container" id="budgetsContainer">
+                                <!-- Los presupuestos se cargarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal para añadir/editar transacción -->
+                    <div id="transactionModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <h2 id="transactionModalTitle">Nueva Transacción</h2>
+                            <form id="transactionForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Concepto</label>
+                                        <input type="text" id="transactionName" placeholder="Nombre de la transacción" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tipo</label>
+                                        <select id="transactionType" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="income">Ingreso</option>
+                                            <option value="expense">Gasto</option>
+                                            <option value="saving">Ahorro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Importe (€)</label>
+                                        <input type="number" id="transactionAmount" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Fecha</label>
+                                        <input type="date" id="transactionDate" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Categoría</label>
+                                    <select id="transactionCategory" required>
+                                        <option value="">Seleccionar...</option>
+                                        <optgroup label="Ingresos">
+                                            <option value="sales">Ventas</option>
+                                            <option value="subsidies">Subvenciones</option>
+                                            <option value="services">Servicios</option>
+                                            <option value="other_income">Otros ingresos</option>
+                                        </optgroup>
+                                        <optgroup label="Gastos">
+                                            <option value="feed">Alimentación animal</option>
+                                            <option value="veterinary">Veterinario</option>
+                                            <option value="supplies">Suministros</option>
+                                            <option value="equipment">Equipamiento</option>
+                                            <option value="maintenance">Mantenimiento</option>
+                                            <option value="fuel">Combustible</option>
+                                            <option value="taxes">Impuestos</option>
+                                            <option value="salary">Salarios</option>
+                                            <option value="other_expense">Otros gastos</option>
+                                        </optgroup>
+                                        <optgroup label="Ahorros">
+                                            <option value="investment">Inversiones</option>
+                                            <option value="reserve">Fondo de reserva</option>
+                                            <option value="expansion">Expansión</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Notas</label>
+                                    <textarea id="transactionNotes" placeholder="Notas adicionales"></textarea>
+                                </div>
+                                <input type="hidden" id="transactionId">
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelTransaction">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal para añadir/editar presupuesto -->
+                    <div id="budgetModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <h2>Nuevo Presupuesto</h2>
+                            <form id="budgetForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Categoría</label>
+                                        <select id="budgetCategory" required>
+                                            <option value="">Seleccionar...</option>
+                                            <option value="feed">Alimentación animal</option>
+                                            <option value="veterinary">Veterinario</option>
+                                            <option value="supplies">Suministros</option>
+                                            <option value="equipment">Equipamiento</option>
+                                            <option value="maintenance">Mantenimiento</option>
+                                            <option value="fuel">Combustible</option>
+                                            <option value="taxes">Impuestos</option>
+                                            <option value="salary">Salarios</option>
+                                            <option value="other_expense">Otros gastos</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Importe máximo (€)</label>
+                                        <input type="number" id="budgetAmount" step="0.01" placeholder="0.00" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Período</label>
+                                        <select id="budgetPeriod" required>
+                                            <option value="monthly">Mensual</option>
+                                            <option value="quarterly">Trimestral</option>
+                                            <option value="yearly">Anual</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Mes de inicio</label>
+                                        <input type="month" id="budgetStartMonth" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Notas</label>
+                                    <textarea id="budgetNotes" placeholder="Notas adicionales"></textarea>
+                                </div>
+                                <input type="hidden" id="budgetId">
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelBudget">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="fincas" class="section-content">
+                    <h2>Gestión de Fincas</h2>
+                    
+                    <div class="actions-bar">
+                        <div>
+                            <button class="btn-primary" id="addFincaBtn">
+                                <i class="fas fa-plus"></i> Nueva Finca
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="fincas-grid">
+                        <!-- Farm cards will be dynamically generated -->
+                    </div>
+                    
+                    <!-- Modal para añadir/editar finca -->
+                    <div id="fincaModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-finca-modal close-modal">&times;</span>
+                            <h2 id="fincaModalTitle">Añadir Nueva Finca</h2>
+                            <form id="fincaForm">
+                                <div class="form-group">
+                                    <label>Nombre de la Finca</label>
+                                    <input type="text" id="newFincaName" placeholder="Nombre de la finca" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ubicación</label>
+                                    <input type="text" id="newLocation" placeholder="Ubicación" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tamaño (hectáreas)</label>
+                                    <input type="number" id="newFarmSize" placeholder="Tamaño en hectáreas" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tipo de Ganado Principal</label>
+                                    <select id="newCattleType">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="vacuno">Vacuno</option>
+                                        <option value="ovino">Ovino</option>
+                                        <option value="porcino">Porcino</option>
+                                        <option value="caprino">Caprino</option>
+                                        <option value="mixto">Mixto</option>
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelFinca">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Guardar Finca</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="inventory" class="section-content">
+                    <h2>Gestión de Inventario</h2>
+                    <div class="actions-bar">
+                        <button class="btn-primary" id="addInventoryBtn">
+                            <i class="fas fa-plus"></i> Nuevo Artículo
+                        </button>
+                        <button class="btn-danger" id="deleteAllInventoryBtn">
+                            <i class="fas fa-trash"></i> Borrar todos los registros
+                        </button>
+                    </div>
+                    
+                    <div class="inventory-grid">
+                        <!-- Artículos se cargarán dinámicamente -->
+                    </div>
+                </section>
+
+                <!-- Modal para añadir/editar artículos -->
+                <div id="inventoryModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal">&times;</span>
+                        <h2 id="inventoryModalTitle">Nuevo Artículo</h2>
+                        <form id="inventoryForm">
+                            <div class="form-group">
+                                <label>Nombre del Artículo*</label>
+                                <input type="text" id="itemName" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Categoría*</label>
+                                    <select id="itemCategory" required>
+                                        <option value="alimentacion">Alimentación</option>
+                                        <option value="medicamentos">Medicamentos</option>
+                                        <option value="equipos">Equipos</option>
+                                        <option value="suministros">Suministros</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cantidad*</label>
+                                    <input type="number" id="itemQuantity" min="0" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Imagen del Artículo</label>
+                                <input type="file" id="itemImage" accept="image/*" class="local-image-input">
+                                <div class="image-preview" id="imagePreview"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Archivos Relacionados</label>
+                                <input type="file" id="inventoryFiles" multiple style="display: none">
+                                <button type="button" class="btn-secondary" id="uploadFilesBtn">
+                                    <i class="fas fa-upload"></i> Subir Archivos
+                                </button>
+                                <ul class="file-list" id="attachedFiles"></ul>
+                            </div>
+                            <input type="hidden" id="editItemId">
+                            <div class="form-actions">
+                                <button type="button" class="btn-secondary" id="cancelInventory">Cancelar</button>
+                                <button type="submit" class="btn-primary">Guardar Artículo</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <section id="reports" class="section-content">
+                    <h2>Informes y Documentación</h2>
+                    <div class="actions-bar">
+                        <button class="btn-danger" id="deleteAllReportsBtn">
+                            <i class="fas fa-trash"></i> Borrar todos los registros
+                        </button>
+                    </div>
+                    
+                    <div class="reports-tabs">
+                        <button class="tab-btn" data-reports-tab="pac">PAC</button>
+                        <button class="tab-btn" data-reports-tab="guides">Guías de Salida</button>
+                        <button class="tab-btn" data-reports-tab="custom">Informes Personalizados</button>
+                    </div>
+                    
+                    <!-- PAC Tab -->
+                    <div id="pacTab" class="reports-tab-content">
+                        <div class="finance-card">
+                            <div class="card-header">
+                                <h3>Documentación PAC</h3>
+                                <div>
+                                    <button class="btn-primary" id="uploadPacBtn">
+                                        <i class="fas fa-upload"></i> Subir Archivos
+                                    </button>
+                                    <input type="file" id="pacFileInput" style="display: none;" multiple>
+                                </div>
+                            </div>
+                            
+                            <div id="pacFilesList" class="uploaded-files">
+                                <!-- PAC files will be listed here -->
+                                <p class="empty-list-message">No hay archivos subidos. Usa el botón "Subir Archivos" para añadir documentación.</p>
+                            </div>
+                            
+                            <div class="finance-card" style="margin-top: 1.5rem;">
+                                <h3>Resumen de Ayudas PAC</h3>
+                                <div class="chart-container" style="height: 250px;">
+                                    <canvas id="pacSummaryChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Guides Tab -->
+                    <div id="guidesTab" class="reports-tab-content">
+                        <div class="finance-card">
+                            <div class="card-header">
+                                <h3>Guías de Salida</h3>
+                                <div>
+                                    <button class="btn-primary" id="uploadGuiasBtn">
+                                        <i class="fas fa-upload"></i> Subir Guía
+                                    </button>
+                                    <input type="file" id="guiasFileInput" style="display: none;" multiple>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row" style="margin-bottom: 1rem;">
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Fecha</label>
+                                    <input type="date" id="guiaDate" class="date-picker">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Tipo</label>
+                                    <select id="guiaTypeFilter">
+                                        <option value="all">Todos los tipos</option>
+                                        <option value="venta">Venta</option>
+                                        <option value="traslado">Traslado</option>
+                                        <option value="matadero">Matadero</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Destino</label>
+                                    <input type="text" id="guiaDestination" placeholder="Destino">
+                                </div>
+                            </div>
+                            
+                            <div id="guiasFilesList" class="uploaded-files">
+                                <!-- Guias files will be listed here -->
+                                <p class="empty-list-message">No hay guías registradas. Usa el botón "Subir Guía" para añadir documentación.</p>
+                            </div>
+                            
+                            <div class="chart-container" style="height: 250px; margin-top: 1.5rem;">
+                                <canvas id="guiasSummaryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom Reports Tab -->
+                    <div id="customTab" class="reports-tab-content">
+                        <div class="finance-card">
+                            <h3>Informes Personalizados</h3>
+                            <p>Genera informes personalizados combinando datos de diferentes secciones.</p>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Tipo de Informe</label>
+                                    <select id="reportType">
+                                        <option value="financial">Financiero</option>
+                                        <option value="livestock">Ganado</option>
+                                        <option value="feeding">Alimentación</option>
+                                        <option value="combined">Combinado</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Período</label>
+                                    <select id="reportPeriod">
+                                        <option value="month">Último Mes</option>
+                                        <option value="quarter">Último Trimestre</option>
+                                        <option value="year">Último Año</option>
+                                        <option value="custom">Personalizado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="customDateRange" style="display: none;" class="form-row">
+                                <div class="form-group">
+                                    <label>Fecha Inicio</label>
+                                    <input type="date" id="reportStartDate" class="date-picker">
+                                </div>
+                                <div class="form-group">
+                                    <label>Fecha Fin</label>
+                                    <input type="date" id="reportEndDate" class="date-picker">
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button class="btn-primary" id="generateReportBtn">Generar Informe</button>
+                                <button class="btn-secondary" id="exportReportBtn">
+                                    <i class="fas fa-download"></i> Exportar PDF
+                                </button>
+                            </div>
+                            
+                            <div id="customReportResult" style="margin-top: 1.5rem; min-height: 300px;">
+                                <!-- Report preview will be shown here -->
+                                <p class="empty-list-message">Configure los parámetros y haga clic en "Generar Informe" para visualizar los resultados.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="settings" class="section-content">
+                    <h2>Configuración</h2>
+                    
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <h3><i class="fas fa-user"></i> Cuenta de Usuario</h3>
+                            <div class="settings-content">
+                                <div class="form-group">
+                                    <label>Nombre</label>
+                                    <input type="text" id="userName" value="Usuario" class="settings-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Correo electrónico</label>
+                                    <input type="email" id="userEmail" value="usuario@ejemplo.com" class="settings-input">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cambiar contraseña</label>
+                                    <button class="btn-secondary" id="changePasswordBtn">Cambiar contraseña</button>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="saveAccountBtn">Guardar cambios</button>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-danger" id="deleteAccountBtn">Eliminar Cuenta</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <h3><i class="fas fa-globe"></i> Idioma y Regional</h3>
+                            <div class="settings-content">
+                                <div class="form-group">
+                                    <label>Idioma</label>
+                                    <select id="languageSelector" class="settings-input">
+                                        <option value="es" selected>Español</option>
+                                        <option value="en">English</option>
+                                        <option value="fr">Français</option>
+                                        <option value="pt">Português</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Formato de fecha</label>
+                                    <select id="dateFormatSelector" class="settings-input">
+                                        <option value="dd/mm/yyyy" selected>DD/MM/AAAA</option>
+                                        <option value="mm/dd/yyyy">MM/DD/AAAA</option>
+                                        <option value="yyyy-mm-dd">AAAA-MM-DD</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Moneda</label>
+                                    <select id="currencySelector" class="settings-input">
+                                        <option value="EUR" selected>Euro (€)</option>
+                                        <option value="USD">Dólar ($)</option>
+                                        <option value="GBP">Libra (£)</option>
+                                    </select>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="saveRegionalBtn">Guardar cambios</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <h3><i class="fas fa-bell"></i> Notificaciones</h3>
+                            <div class="settings-content">
+                                <div class="settings-toggle-group">
+                                    <label>Notificaciones por correo</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="emailNotifications" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-toggle-group">
+                                    <label>Recordatorios de tareas</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="taskReminders" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-toggle-group">
+                                    <label>Alertas de alimentación</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="feedingAlerts" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-toggle-group">
+                                    <label>Alertas de stock bajo</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="lowStockAlerts" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="saveNotificationsBtn">Guardar cambios</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <h3><i class="fas fa-paint-brush"></i> Apariencia</h3>
+                            <div class="settings-content">
+                                <div class="form-group">
+                                    <label>Tema</label>
+                                    <select id="themeSelector" class="settings-input">
+                                        <option value="light" selected>Claro</option>
+                                        <option value="dark">Oscuro</option>
+                                        <option value="high-contrast">Alto contraste</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tipografía</label>
+                                    <select id="fontSelector" class="settings-input">
+                                        <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" selected>Segoe UI (Predeterminada)</option>
+                                        <option value="Arial, sans-serif">Arial</option>
+                                        <option value="'Roboto', sans-serif">Roboto</option>
+                                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                                        <option value="'Lato', sans-serif">Lato</option>
+                                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                                        <option value="'Nunito', sans-serif">Nunito</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Vista previa de tipografía</label>
+                                    <p id="fontPreview" class="font-preview">Este texto muestra cómo se verá la tipografía seleccionada.</p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Tamaño del texto</label>
+                                    <select id="fontSizeSelector" class="settings-input">
+                                        <option value="small">Pequeño</option>
+                                        <option value="medium" selected>Mediano</option>
+                                        <option value="large">Grande</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Color principal</label>
+                                    <input type="color" id="primaryColorPicker" value="#4caf50" class="color-picker">
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="applyFontBtn">Aplicar cambios</button>
+                                    <button class="btn-secondary" id="resetAppearanceBtn">Restablecer valores</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card">
+                            <h3><i class="fas fa-shield-alt"></i> Privacidad y Datos</h3>
+                            <div class="settings-content">
+                                <div class="settings-toggle-group">
+                                    <label>Guardar datos localmente</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="localStorageToggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-toggle-group">
+                                    <label>Sincronización con la nube</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="cloudSyncToggle">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-toggle-group">
+                                    <label>Permitir análisis de uso</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="analyticsToggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="savePrivacyBtn">Guardar cambios</button>
+                                    <button class="btn-danger" id="clearDataBtn">Borrar todos los datos</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="settings-card full-width">
+                            <h3><i class="fas fa-cogs"></i> Ajustes generales</h3>
+                            <div class="settings-content">
+                                <div class="form-group">
+                                    <label>Configuración inicial al abrir la aplicación</label>
+                                    <select id="startupSection" class="settings-input">
+                                        <option value="home" selected>Página de inicio</option>
+                                        <option value="animals">Animales</option>
+                                        <option value="feeding">Alimentación</option>
+                                        <option value="dashboard">Dashboard</option>
+                                    </select>
+                                </div>
+                                <div class="settings-toggle-group">
+                                    <label>Modo de ahorro de datos</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="dataSaverMode">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="settings-toggle-group">
+                                    <label>Auto-guardado</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="autoSaveToggle" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="saveGeneralBtn">Guardar cambios</button>
+                                    <button class="btn-danger" id="resetAllBtn">Restablecer todo</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal para cambiar contraseña -->
+                    <div id="passwordModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <h2>Cambiar contraseña</h2>
+                            <form id="passwordForm">
+                                <div class="form-group">
+                                    <label>Contraseña actual</label>
+                                    <input type="password" id="currentPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nueva contraseña</label>
+                                    <input type="password" id="newPassword" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Confirmar nueva contraseña</label>
+                                    <input type="password" id="confirmPassword" required>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn-secondary" id="cancelPasswordChange">Cancelar</button>
+                                    <button type="submit" class="btn-primary">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    <script src="app.js"></script>
+</body>
 </html>

@@ -1,0 +1,13 @@
+// Clear currentUser
+localStorage.removeItem('currentUser');
+
+// Redirect to login
+checkLoginStatus(); // which will hide app and show login
+
+// Optionally clear other user-specific data
+localStorage.removeItem('animals');
+localStorage.removeItem('financeTransactions');
+localStorage.removeItem('financeBudgets');
+localStorage.removeItem('feedingRecords');
+localStorage.removeItem('tasks');
+// ... others as needed
