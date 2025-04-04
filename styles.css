@@ -1,3 +1,5 @@
+
+
 /* Variables y reseteo */
 :root {
     --primary-color: #4caf50;
@@ -38,18 +40,35 @@ body {
 
 /* Estructura principal */
 .app-container {
-    display: flex;
+    position: relative;
     height: 100vh;
     overflow: hidden;
 }
 
 .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+    z-index: 1000;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
     width: 250px;
     background-color: var(--gray-800);
     color: var(--text-light);
     padding: 1.5rem 0;
+}
+
+.content {
+    position: fixed;
+    left: 250px;
+    right: 0;
+    top: 0;
+    bottom: 0;
     overflow-y: auto;
-    flex-shrink: 0;
+    margin-left: 0;
+    transition: left 0.3s ease;
 }
 
 .logo {
@@ -851,25 +870,43 @@ nav ul li.active {
 .file-item {
     display: flex;
     align-items: center;
-    padding: 0.5rem;
+    padding: 0.75rem;
     margin-bottom: 0.5rem;
-    background-color: white;
+    background-color: var(--gray-100);
     border-radius: var(--border-radius);
-    border: 1px solid var(--gray-300);
+    gap: 1rem;
 }
 
 .file-item i {
-    margin-right: 0.5rem;
-    color: var(--gray-700);
+    color: var(--primary-color);
 }
 
-.file-item .file-name {
-    flex-grow: 1;
+.file-name {
+    flex: 1;
+    font-weight: 500;
 }
 
-.file-item .file-actions {
-    display: flex;
-    gap: 0.5rem;
+.file-type {
+    background-color: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.file-size {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+.file-actions {
+    margin-left: auto;
+}
+
+.empty-list-message {
+    color: var(--gray-500);
+    text-align: center;
+    padding: 1rem;
 }
 
 .date-picker {
@@ -1485,7 +1522,6 @@ nav ul li.active {
 .attachment-list {
     list-style: none;
     padding: 0;
-    margin-top: 0.5rem;
 }
 
 .attachment-list li {
@@ -1594,11 +1630,6 @@ nav ul li.active {
     border-bottom: 1px solid var(--gray-200);
     display: flex;
     align-items: center;
-}
-
-.file-list li i {
-    margin-right: 0.5rem;
-    color: var(--gray-600);
 }
 
 /* Estilos para la sección de Configuración */
@@ -1877,184 +1908,34 @@ body.dark-theme .finca-card {
 }
 
 /* Responsive */
-@media (max-width: 992px) {
-    .sidebar {
-        width: 60px;
-        position: fixed;
-        z-index: 1000;
-    }
-    
-    .content {
-        margin-left: 60px;
-    }
-    
-    .dashboard-grid,
-    .finance-grid,
-    .quick-access-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .stat-summary-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .animal-details-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
 @media (max-width: 768px) {
-    :root {
-        --base-font-size: 14px;
-    }
-    
-    .stats-container,
-    .stat-summary-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-row {
-        flex-direction: column;
-    }
-    
-    .profile-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .home-header h1 {
-        font-size: 1.8rem;
-    }
-    
-    .modal-content {
-        width: 90%;
-        margin: 2% auto;
-        padding: 1rem;
-    }
-    
-    .transactions-table th, 
-    .transactions-table td {
-        padding: 0.5rem;
-        font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    :root {
-        --base-font-size: 13px;
-        --border-radius: 4px;
+    .content {
+        left: 0;
     }
     
     .sidebar {
-        width: 100%;
-        bottom: 0;
-        height: 60px;
-        top: auto;
-        padding: 0;
+        transform: translateX(-100%);
     }
     
-    .sidebar nav ul {
-        display: flex;
-        justify-content: space-around;
-    }
-    
-    .sidebar nav ul li {
-        padding: 0.5rem;
-        margin: 0;
-        border-left: none;
-        border-top: 3px solid transparent;
-    }
-    
-    .sidebar nav ul li.active {
-        border-left: none;
-        border-top-color: var(--primary-color);
-    }
-    
-    .content {
-        margin-left: 0;
-        padding-bottom: 60px;
-    }
-    
-    .section-content {
-        padding: 1rem;
-    }
-    
-    .section-content h2 {
-        font-size: 1.5rem;
-    }
-    
-    .animal-photo {
-        height: 100px;
-    }
-    
-    .quick-access-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .actions-bar {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .filter-group {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .modal-content {
-        width: 95%;
-        padding: 1rem;
-    }
-    
-    .animal-card {
-        width: 100%;
-        margin: 0;
-    }
-    
-    .form-row .form-group {
-        flex: auto;
-        width: 100%;
-    }
-    
-    .transactions-table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .finance-summary {
-        grid-template-columns: 1fr;
-    }
-    
-    .menu-toggle {
-        display: block;
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        z-index: 1001;
+    .sidebar.active {
+        transform: translateX(0);
     }
 }
 
-/* Mejorar legibilidad en móviles */
-@media (max-width: 360px) {
-    :root {
-        --base-font-size: 12px;
-    }
-    
-    .stat-info h3 {
-        font-size: 1.2rem;
-    }
-    
-    .quick-stat-card i {
-        font-size: 2rem;
-    }
-    
-    .form-group input,
-    .form-group select {
-        padding: 0.5rem;
-    }
-    
-    .btn-primary, .btn-secondary {
-        padding: 0.5rem 1rem;
-    }
+/* Handle scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
 }
 
 /* Añadir estilos para menú hamburguesa */
@@ -2071,9 +1952,6 @@ body.dark-theme .finca-card {
 @media (max-width: 480px) {
     .sidebar {
         transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        height: 100vh;
-        top: 0;
     }
     
     .sidebar.active {
@@ -2209,4 +2087,9 @@ input[type="time"] {
 
 .logout-btn:hover {
     opacity: 1;
+}
+
+#categoryFilter,
+#inventorySearch {
+    display: none;
 }

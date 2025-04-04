@@ -69,108 +69,119 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Toggle between login and register forms
-    showRegisterLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        loginForm.style.display = 'none';
-        registerForm.style.display = 'block';
-    });
+    if (showRegisterLink) {
+        showRegisterLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+        });
+    }
     
-    showLoginLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        registerForm.style.display = 'none';
-        loginForm.style.display = 'block';
-    });
+    if (showLoginLink) {
+        showLoginLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+    }
     
     // Handle login
-    loginButton.addEventListener('click', function() {
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-        
-        if (!email || !password) {
-            loginError.textContent = 'Por favor, complete todos los campos';
-            return;
-        }
-        
-        // Get users from localStorage
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const user = users.find(u => u.email === email && u.password === password);
-        
-        if (user) {
+    if (loginButton) {
+        loginButton.addEventListener('click', function() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                loginError.textContent = 'Por favor, complete todos los campos';
+                return;
+            }
+            
+            // Get users from localStorage
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Store current user
+                localStorage.setItem('currentUser', JSON.stringify({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email
+                }));
+                
+                // Check login status to update UI
+                checkLoginStatus();
+            } else {
+                loginError.textContent = 'Credenciales inválidas';
+            }
+        });
+    }
+    
+    // Handle register
+    if (registerButton) {
+        registerButton.addEventListener('click', function() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            // Validate fields
+            if (!name || !email || !password || !confirmPassword) {
+                registerError.textContent = 'Por favor, complete todos los campos';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                registerError.textContent = 'Las contraseñas no coinciden';
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                registerError.textContent = 'Correo electrónico inválido';
+                return;
+            }
+            
+            // Get users from localStorage
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Check if email already exists
+            if (users.some(u => u.email === email)) {
+                registerError.textContent = 'Este correo electrónico ya está registrado';
+                return;
+            }
+            
+            // Add new user
+            const newUser = {
+                id: Date.now().toString(),
+                name,
+                email,
+                password // In a real app, you should hash this
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
             // Store current user
             localStorage.setItem('currentUser', JSON.stringify({
-                id: user.id,
-                name: user.name,
-                email: user.email
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email
             }));
             
             // Check login status to update UI
             checkLoginStatus();
-        } else {
-            loginError.textContent = 'Credenciales inválidas';
-        }
-    });
-    
-    // Handle register
-    registerButton.addEventListener('click', function() {
-        const name = document.getElementById('registerName').value;
-        const email = document.getElementById('registerEmail').value;
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
-        
-        // Validate fields
-        if (!name || !email || !password || !confirmPassword) {
-            registerError.textContent = 'Por favor, complete todos los campos';
-            return;
-        }
-        
-        if (password !== confirmPassword) {
-            registerError.textContent = 'Las contraseñas no coinciden';
-            return;
-        }
-        
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            registerError.textContent = 'Correo electrónico inválido';
-            return;
-        }
-        
-        // Get users from localStorage
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        
-        // Check if email already exists
-        if (users.some(u => u.email === email)) {
-            registerError.textContent = 'Este correo electrónico ya está registrado';
-            return;
-        }
-        
-        // Add new user
-        const newUser = {
-            id: Date.now().toString(),
-            name,
-            email,
-            password // In a real app, you should hash this
-        };
-        
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-        
-        // Store current user
-        localStorage.setItem('currentUser', JSON.stringify({
-            id: newUser.id,
-            name: newUser.name,
-            email: newUser.email
-        }));
-        
-        // Check login status to update UI
-        checkLoginStatus();
-    });
+        });
+    }
     
     // Handle logout
-    document.getElementById('logoutButton').addEventListener('click', function() {
-        localStorage.removeItem('currentUser');
-        checkLoginStatus();
-    });
+    const logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            localStorage.removeItem('currentUser');
+            checkLoginStatus();
+        });
+    }
     
     // Initial check on page load
     checkLoginStatus();
@@ -192,29 +203,33 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mostrar la sección correspondiente
             const sectionId = this.getAttribute('data-section');
             const sectionElement = document.getElementById(sectionId);
-            sectionElement.classList.add('active');
-            
-            // Inicializar secciones específicas
-            if (sectionId === 'animals') {
-                // No specific initialization needed for animals section yet
-                loadFincasInSelectors();
-            } else if (sectionId === 'feeding') {
-                // Inicializar la sección de alimentación
-                initFeedingSection();
-            } else if (sectionId === 'tasks') {
-                initTasksSection();
-            } else if (sectionId === 'inventory') {
-                initInventory();
-            } else if (sectionId === 'settings') {
-                initSettingsSection();
-            } else if (sectionId === 'activities') {
-                initActivitiesSection();
-            }
-            
-            // Actualizar home si corresponde
-            if (sectionId === 'home') {
-                updateHomeStats();
-                loadRecentActivity();
+            if (sectionElement) {
+                sectionElement.classList.add('active');
+                
+                // Inicializar secciones específicas
+                if (sectionId === 'animals') {
+                    // No specific initialization needed for animals section yet
+                    loadFincasInSelectors();
+                } else if (sectionId === 'feeding') {
+                    // Inicializar la sección de alimentación
+                    initFeedingSection();
+                } else if (sectionId === 'tasks') {
+                    initTasksSection();
+                } else if (sectionId === 'inventory') {
+                    initInventory();
+                } else if (sectionId === 'settings') {
+                    initSettingsSection();
+                } else if (sectionId === 'activities') {
+                    initActivitiesSection();
+                } else if (sectionId === 'reports') {
+                    loadSavedFiles();
+                }
+                
+                // Actualizar home si corresponde
+                if (sectionId === 'home') {
+                    updateHomeStats();
+                    loadRecentActivity();
+                }
             }
         });
     });
@@ -247,13 +262,13 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Función para actualizar estadísticas en la página de inicio
     function updateHomeStats() {
-        // Contar animales
-        const animalCards = document.querySelectorAll('.animal-card');
-        document.getElementById('animalCount').textContent = animalCards.length;
+        // Count animals from localStorage rather than counting DOM elements
+        const animals = JSON.parse(localStorage.getItem('animals') || '[]');
+        document.getElementById('animalCount').textContent = animals.length;
         
-        // Contar fincas
-        const fincaCards = document.querySelectorAll('.finca-card');
-        document.getElementById('fincaCount').textContent = fincaCards.length;
+        // Get farm count from localStorage
+        const fincas = JSON.parse(localStorage.getItem('fincas') || '[]');
+        document.getElementById('fincaCount').textContent = fincas.length;
         
         // Mostrar balance financiero
         const totalBalance = document.getElementById('totalBalance')?.textContent || '€0.00';
@@ -529,7 +544,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Datos de nacimiento
             const birthDate = document.getElementById('birthDate')?.value || '';
             const motherCrotal = document.getElementById('motherCrotal')?.value || '';
-            const birthSex = document.getElementById('birthSex')?.value || '';
             const birthWeight = document.getElementById('birthWeight')?.value || '';
             const birthCondition = document.getElementById('birthCondition')?.value || '';
             const birthNotes = document.getElementById('birthNotes')?.value || '';
@@ -538,105 +552,60 @@ document.addEventListener('DOMContentLoaded', function() {
             const isEditMode = this.getAttribute('data-edit-mode') === 'true';
             const cardId = this.getAttribute('data-card-id');
             
-            // En una implementación real, aquí iría la lógica para guardar los datos del animal en una BD
-            
-            if (isEditMode && cardId) {
-                // Buscar la tarjeta existente por su ID
-                let existingCard = document.getElementById(cardId);
-                
-                // Si no se encuentra por ID, intentamos encontrar por el animalId
-                if (!existingCard) {
-                    const allCards = document.querySelectorAll('.animal-card');
-                    for (let card of allCards) {
-                        if (card.querySelector('h3').textContent.includes(animalId)) {
-                            existingCard = card;
-                            break;
-                        }
-                    }
-                }
-                
-                // Si se encuentra la tarjeta, actualizar sus datos
-                if (existingCard) {
-                    existingCard.querySelector('h3').textContent = `ID: ${animalId}`;
-                    existingCard.querySelector('p:nth-child(2)').textContent = `Raza: ${breed}`;
-                    existingCard.querySelector('p:nth-child(3)').textContent = `Sexo: ${sex}`;
-                    existingCard.querySelector('p:nth-child(4)').textContent = `Edad: ${age} años`;
-                    existingCard.querySelector('p:nth-child(5)').textContent = `Peso: ${weight} kg`;
-                    if (finca) {
-                        const fincaLabel = existingCard.querySelector('.farm-label');
-                        if (!fincaLabel) {
-                            fincaLabel = document.createElement('p');
-                            fincaLabel.className = 'farm-label';
-                            existingCard.querySelector('.animal-info').appendChild(fincaLabel);
-                        }
-                        fincaLabel.innerHTML = `<strong>Finca:</strong> ${finca}`;
-                    }
-                    
-                    // Actualizar el icono según la categoría
-                    const iconElement = existingCard.querySelector('.animal-photo i');
-                    iconElement.className = `fas fa-${category === 'porcino' ? 'piggy-bank' : category === 'ovino' ? 'sheep' : category === 'caprino' ? 'goat' : 'cow'}`;
-                    
-                    alert('Animal actualizado correctamente');
+            // Create animal object
+            const animalData = {
+                id: isEditMode ? cardId : 'animal-' + Date.now(),
+                animalId,
+                breed,
+                category,
+                sex,
+                age,
+                weight,
+                finca,
+                birthDate,
+                motherCrotal,
+                birthWeight,
+                birthCondition,
+                birthNotes,
+                type: 'regular',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            // Get existing animals from localStorage
+            let animals = JSON.parse(localStorage.getItem('animals') || '[]');
+
+            if (isEditMode) {
+                // Update existing animal
+                const index = animals.findIndex(a => a.id === cardId);
+                if (index !== -1) {
+                    animals[index] = {...animals[index], ...animalData, updatedAt: new Date().toISOString()};
                 }
             } else {
-                // Para esta demo, podríamos añadir una nueva tarjeta al grid de animales
-                const animalCards = document.querySelector('.animal-cards');
-                if (animalCards) {
-                    const newAnimalCard = document.createElement('div');
-                    newAnimalCard.className = 'animal-card';
-                    newAnimalCard.id = 'animal-' + Date.now(); // Generar un ID único
-                    newAnimalCard.innerHTML = `
-                        <div class="animal-photo">
-                            <i class="fas fa-${category === 'porcino' ? 'piggy-bank' : category === 'ovino' ? 'sheep' : category === 'caprino' ? 'goat' : 'cow'}"></i>
-                        </div>
-                        <div class="animal-info">
-                            <h3>ID: ${animalId}</h3>
-                            <p><strong>Categoría:</strong> ${category}</p>
-                            <p><strong>Sexo:</strong> ${sex}</p>
-                            <p><strong>Raza:</strong> ${breed}</p>
-                            <p><strong>Edad:</strong> ${age} años</p>
-                            <p><strong>Peso:</strong> ${weight} kg</p>
-                            ${finca ? `<p><strong>Finca:</strong> ${finca}</p>` : ''}
-                            ${birthDate ? `<p><strong>Fecha Nacimiento:</strong> ${new Date(birthDate).toLocaleDateString()}</p>` : ''}
-                            ${motherCrotal ? `<p><strong>Madre:</strong> ${motherCrotal}</p>` : ''}
-                            ${birthWeight ? `<p><strong>Peso al Nacer:</strong> ${birthWeight} kg</p>` : ''}
-                            ${birthCondition && birthCondition !== 'normal' ? `<p><strong>Condición al Nacer:</strong> ${birthCondition}</p>` : ''}
-                        </div>
-                        <div class="animal-actions">
-                            <button class="btn-icon edit-animal" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-delete delete-animal" title="Eliminar">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    `;
-                    animalCards.appendChild(newAnimalCard);
-                    
-                    // Añadir el botón de eliminar al nuevo animal
-                    const deleteBtn = newAnimalCard.querySelector('.delete-animal');
-                    deleteBtn.addEventListener('click', function(event) {
-                        event.preventDefault();
-                        if (confirm('¿Estás seguro de que quieres eliminar este animal?')) {
-                            newAnimalCard.remove();
-                            alert('Animal eliminado correctamente');
-                        }
-                    });
-                    
-                    alert('Animal guardado correctamente');
-                }
+                // Add new animal
+                animals.push(animalData);
             }
-            
-            // Resetear el formulario y cerrar el modal
+
+            // Save to localStorage
+            localStorage.setItem('animals', JSON.stringify(animals));
+
+            // Update UI
+            if (isEditMode) {
+                updateAnimalCard(animalData);
+            } else {
+                addAnimalToGrid(animalData);
+            }
+
+            // Reset form and close modal
             this.reset();
             this.removeAttribute('data-edit-mode');
             this.removeAttribute('data-card-id');
             animalModal.style.display = 'none';
             
-            // Reinicializar los listeners de click en las tarjetas
-            initAnimalCardClickListeners();
+            // Update statistics and records
             updateHomeStats();
             updateAllRecordsTab();
+            alert('Animal guardado correctamente');
         });
     }
     
@@ -645,184 +614,319 @@ document.addEventListener('DOMContentLoaded', function() {
         birthRegistrationForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Obtener los datos del formulario
-            const animalId = document.getElementById('birthAnimalId').value;
-            const breed = document.getElementById('birthBreed').value;
-            const category = document.getElementById('birthAnimalCategory').value;
-            const sex = document.getElementById('birthAnimalSex').value;
-            const birthDate = document.getElementById('birthDateInput').value;
-            const motherCrotal = document.getElementById('birthMotherCrotal').value;
-            const birthWeight = document.getElementById('birthWeightInput').value;
-            const birthCondition = document.getElementById('birthConditionInput').value;
-            const birthNotes = document.getElementById('birthNotesInput').value;
-            const finca = document.getElementById('birthFinca').value;
+            const birthData = {
+                id: 'birth-' + Date.now(),
+                animalId: document.getElementById('birthAnimalId').value,
+                breed: document.getElementById('birthBreed').value,
+                category: document.getElementById('birthAnimalCategory').value,
+                sex: document.getElementById('birthAnimalSex').value,
+                birthDate: document.getElementById('birthDateInput').value,
+                motherCrotal: document.getElementById('birthMotherCrotal').value,
+                birthWeight: document.getElementById('birthWeightInput').value,
+                birthCondition: document.getElementById('birthConditionInput').value,
+                birthNotes: document.getElementById('birthNotesInput').value,
+                finca: document.getElementById('birthFinca').value,
+                type: 'birth',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            // Get existing animals
+            let animals = JSON.parse(localStorage.getItem('animals') || '[]');
             
-            // Calcular edad aproximada en años (para simplificar)
-            const birthDateObj = new Date(birthDate);
-            const now = new Date();
-            const ageInMilliseconds = now - birthDateObj;
-            const ageInYears = (ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25)).toFixed(1);
+            // Add new birth record
+            animals.push(birthData);
             
-            // Para esta demo, crear una nueva tarjeta en la sección de registros de nacimiento
-            const animalCards = document.querySelector('#birthRegistration .animal-cards');
-            if (animalCards) {
-                const newAnimalCard = document.createElement('div');
-                newAnimalCard.className = 'animal-card';
-                newAnimalCard.id = 'birth-' + Date.now(); // Generar un ID único
-                newAnimalCard.innerHTML = `
-                    <div class="animal-photo">
-                        <i class="fas fa-${category === 'porcino' ? 'piggy-bank' : category === 'ovino' ? 'sheep' : category === 'caprino' ? 'goat' : 'cow'}"></i>
-                    </div>
-                    <div class="animal-info">
-                        <h3>ID: ${animalId}</h3>
-                        <p><strong>Categoría:</strong> ${category}</p>
-                        <p><strong>Sexo:</strong> ${sex}</p>
-                        <p><strong>Raza:</strong> ${breed}</p>
-                        <p><strong>Fecha Nacimiento:</strong> ${new Date(birthDate).toLocaleDateString()}</p>
-                        <p><strong>Madre:</strong> ${motherCrotal}</p>
-                        <p><strong>Peso al Nacer:</strong> ${birthWeight} kg</p>
-                        ${finca ? `<p><strong>Finca:</strong> ${finca}</p>` : ''}
-                        ${birthCondition && birthCondition !== 'normal' ? `<p><strong>Condición al Nacer:</strong> ${birthCondition}</p>` : ''}
-                        ${birthNotes ? `<p><strong>Observaciones:</strong> ${birthNotes}</p>` : ''}
-                    </div>
-                    <div class="animal-actions">
-                        <button class="btn-icon edit-birth" data-id="${animalId}" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    </div>
-                `;
-                animalCards.appendChild(newAnimalCard);
-                
-                alert('Nacimiento registrado correctamente');
-            }
-            
-            // Limpiar formulario y cerrar modal
+            // Save to localStorage
+            localStorage.setItem('animals', JSON.stringify(animals));
+
+            // Add to UI
+            addBirthToGrid(birthData);
+
+            // Reset form and close modal
             this.reset();
             birthRegistrationModal.style.display = 'none';
             
-            // Reinicializar los listeners de click en las tarjetas
-            initAnimalCardClickListeners();
+            // Update statistics and records
             updateHomeStats();
             updateAllRecordsTab();
+            alert('Nacimiento registrado correctamente');
         });
     }
     
-    // Inicializar botones de eliminar animales
-    const deleteAnimalBtns = document.querySelectorAll('.delete-animal');
-    if (deleteAnimalBtns.length > 0) {
-        deleteAnimalBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('¿Estás seguro de que quieres eliminar este animal?')) {
-                    // En una implementación real, aquí iría la lógica para eliminar el animal
-                    // Por ahora, simplemente eliminamos la tarjeta del DOM
-                    const card = this.closest('.animal-card');
-                    if (card) {
-                        card.remove();
-                        alert('Animal eliminado correctamente');
-                    }
-                }
-                updateHomeStats();
-                updateAllRecordsTab();
-            });
-        });
+    // Function to create animal card
+    function addAnimalToGrid(animalData, container = null) {
+        if (!container) {
+            container = document.querySelector('#newAnimal .animal-cards');
+        }
+        if (!container) return;
+        
+        const card = createAnimalCard(animalData);
+        container.appendChild(card);
+        initAnimalCardListeners(card);
     }
-    
-    // Inicializar botones de editar animales
-    const editAnimalBtns = document.querySelectorAll('.edit-animal');
-    if (editAnimalBtns.length > 0) {
-        editAnimalBtns.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const card = this.closest('.animal-card');
-                if (card) {
-                    // Obtener los datos del animal
-                    const animalId = card.querySelector('h3').textContent.replace('ID: ', '');
-                    const category = card.querySelector('p:nth-child(1)').textContent.replace('Categoría:', '').trim();
-                    const sex = card.querySelector('p:nth-child(2)').textContent.replace('Sexo:', '').trim();
-                    const breed = card.querySelector('p:nth-child(3)').textContent.replace('Raza:', '').trim();
-                    const age = card.querySelector('p:nth-child(4)').textContent.replace('Edad:', '').replace(' años', '').trim();
-                    const weight = card.querySelector('p:nth-child(5)').textContent.replace('Peso:', '').replace(' kg', '').trim();
-                    
-                    // Buscar información de nacimiento si existe
-                    let birthDate = '';
-                    let motherCrotal = '';
-                    let birthWeight = '';
-                    let birthCondition = '';
-                    
-                    // Buscar elementos por su texto
-                    const paragraphs = card.querySelectorAll('.animal-info p');
-                    paragraphs.forEach(p => {
-                        const text = p.textContent;
-                        if (text.includes('Fecha Nacimiento:')) {
-                            birthDate = text.replace('Fecha Nacimiento:', '').trim();
-                        } else if (text.includes('Madre:')) {
-                            motherCrotal = text.replace('Madre:', '').trim();
-                        } else if (text.includes('Peso al Nacer:')) {
-                            birthWeight = text.replace('Peso al Nacer:', '').replace(' kg', '').trim();
-                        } else if (text.includes('Condición al Nacer:')) {
-                            birthCondition = text.replace('Condición al Nacer:', '').trim();
-                        }
-                    });
-                    
-                    // Llenar el formulario con los datos del animal
-                    document.getElementById('animalId').value = animalId;
-                    document.getElementById('breed').value = breed;
-                    document.getElementById('animalCategory').value = category;
-                    document.getElementById('animalSex').value = sex;
-                    document.getElementById('age').value = age;
-                    document.getElementById('weight').value = weight;
-                    document.getElementById('animalFinca').value = card.querySelector('.farm-label')?.textContent.replace('Finca: ', '') || '';
-                    
-                    // Llenar datos de nacimiento si existen
-                    if (birthDate && document.getElementById('birthDate')) {
-                        document.getElementById('birthDate').value = convertToDateInputFormat(birthDate);
-                    }
-                    
-                    if (motherCrotal && document.getElementById('motherCrotal')) {
-                        document.getElementById('motherCrotal').value = motherCrotal;
-                    }
-                    
-                    if (birthWeight && document.getElementById('birthWeight')) {
-                        document.getElementById('birthWeight').value = birthWeight;
-                    }
-                    
-                    if (birthCondition && document.getElementById('birthCondition')) {
-                        document.getElementById('birthCondition').value = birthCondition;
-                    }
-                    
-                    if (document.getElementById('birthSex')) {
-                        document.getElementById('birthSex').value = sex;
-                    }
-                    
-                    // Cambiar el título del modal
-                    const modalTitle = document.querySelector('#animalModal h2');
-                    if (modalTitle) {
-                        modalTitle.textContent = 'Editar Animal';
-                    }
-                    
-                    // Marcar el formulario como edición
-                    document.getElementById('animalForm').setAttribute('data-edit-mode', 'true');
-                    document.getElementById('animalForm').setAttribute('data-card-id', card.id || '');
-                    
-                    // Mostrar el modal
-                    animalModal.style.display = 'block';
-                }
-            });
-        });
+
+    function addBirthToGrid(birthData, container = null) {
+        if (!container) {
+            container = document.querySelector('#birthRegistration .animal-cards');
+        }
+        if (!container) return;
+        
+        const card = createBirthCard(birthData);
+        container.appendChild(card);
+        initAnimalCardListeners(card);
     }
-    
-    // Detectar cuando se muestra la sección de configuración
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const sectionId = this.getAttribute('data-section');
+
+    function createAnimalCard(animalData) {
+        const card = document.createElement('div');
+        card.className = 'animal-card';
+        card.id = animalData.id || `animal-${Date.now()}`;
+        
+        const animalIcon = animalData.category === 'porcino' ? 'piggy-bank' : 
+                           animalData.category === 'ovino' ? 'sheep' : 
+                           animalData.category === 'caprino' ? 'goat' : 'cow';
+        
+        card.innerHTML = `
+            <div class="animal-photo">
+                <i class="fas fa-${animalIcon}"></i>
+            </div>
+            <div class="animal-info">
+                <h3>ID: ${animalData.animalId || ''}</h3>
+                <p><strong>Categoría:</strong> ${animalData.category || ''}</p>
+                <p><strong>Sexo:</strong> ${animalData.sex || ''}</p>
+                <p><strong>Raza:</strong> ${animalData.breed || ''}</p>
+                <p><strong>Edad:</strong> ${animalData.age || ''} años</p>
+                <p><strong>Peso:</strong> ${animalData.weight || ''} kg</p>
+                ${animalData.finca ? `<p class="farm-label"><strong>Finca:</strong> ${animalData.finca}</p>` : ''}
+            </div>
+            <div class="animal-actions">
+                <button class="btn-icon edit-animal" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon btn-delete delete-animal" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        return card;
+    }
+
+    function createBirthCard(birthData) {
+        const card = document.createElement('div');
+        card.className = 'animal-card';
+        card.id = birthData.id || `birth-${Date.now()}`;
+        
+        const animalIcon = birthData.category === 'porcino' ? 'piggy-bank' : 
+                           birthData.category === 'ovino' ? 'sheep' : 
+                           birthData.category === 'caprino' ? 'goat' : 'cow';
+        
+        card.innerHTML = `
+            <div class="animal-photo">
+                <i class="fas fa-${animalIcon}"></i>
+            </div>
+            <div class="animal-info">
+                <h3>ID: ${birthData.animalId || ''}</h3>
+                <p><strong>Categoría:</strong> ${birthData.category || ''}</p>
+                <p><strong>Sexo:</strong> ${birthData.sex || ''}</p>
+                <p><strong>Raza:</strong> ${birthData.breed || ''}</p>
+                <p><strong>Fecha Nacimiento:</strong> ${birthData.birthDate ? new Date(birthData.birthDate).toLocaleDateString() : ''}</p>
+                <p><strong>Madre:</strong> ${birthData.motherCrotal || ''}</p>
+                <p><strong>Peso al Nacer:</strong> ${birthData.birthWeight || ''} kg</p>
+                ${birthData.finca ? `<p class="farm-label"><strong>Finca:</strong> ${birthData.finca}</p>` : ''}
+                ${birthData.birthCondition && birthData.birthCondition !== 'normal' ? `<p><strong>Condición al Nacer:</strong> ${birthData.birthCondition}</p>` : ''}
+                ${birthData.birthNotes ? `<p><strong>Observaciones:</strong> ${birthData.birthNotes}</p>` : ''}
+            </div>
+            <div class="animal-actions">
+                <button class="btn-icon edit-birth" title="Editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon btn-delete delete-animal" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        return card;
+    }
+
+    function deleteAnimal(id) {
+        if (confirm('¿Estás seguro de que quieres eliminar este animal?')) {
+            let animals = JSON.parse(localStorage.getItem('animals') || '[]');
+            animals = animals.filter(animal => animal.id !== id);
+            localStorage.setItem('animals', JSON.stringify(animals));
             
-            if (sectionId === 'feeding' || sectionId === 'fincas') {
-                // Inicializar el editor para la sección correspondiente
-                initSectionEditor(sectionId);
+            // Remove from UI
+            const card = document.getElementById(id);
+            if (card) {
+                card.remove();
+            }
+            
+            updateHomeStats();
+            updateAllRecordsTab();
+        }
+    }
+
+    function initAnimalCardListeners(card) {
+        if (!card) return;
+        
+        const deleteBtn = card.querySelector('.delete-animal');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const id = this.getAttribute('data-id') || card.id;
+                if (id) {
+                    deleteAnimal(id);
+                }
+            });
+        }
+        
+        const editBtn = card.querySelector('.edit-animal, .edit-birth');
+        if (editBtn) {
+            editBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Edit functionality handled in the card click event
+            });
+        }
+        
+        // Add click handler to the entire card
+        card.addEventListener('click', function(e) {
+            if (!e.target.closest('.btn-icon') && !e.target.closest('.animal-actions')) {
+                // Functionality to show animal details
+                const id = card.id;
+                const animalData = getAnimalById(id);
+                if (animalData) {
+                    if (animalData.type === 'birth') {
+                        openBirthEditModal(animalData);
+                    } else {
+                        openAnimalEditModal(animalData);
+                    }
+                }
             }
         });
-    });
+    }
+
+    // Add helper function to get animal by ID
+    function getAnimalById(id) {
+        if (!id) return null;
+        
+        const animals = JSON.parse(localStorage.getItem('animals') || '[]');
+        return animals.find(animal => animal.id === id) || null;
+    }
+
+    // Helper functions to open edit modals
+    function openAnimalEditModal(animalData) {
+        if (!animalData) return;
+        
+        const animalModal = document.getElementById('animalModal');
+        if (!animalModal) return;
+        
+        // Set form values
+        const animalForm = document.getElementById('animalForm');
+        if (!animalForm) return;
+        
+        const idInput = document.getElementById('animalId');
+        if (idInput) idInput.value = animalData.animalId || '';
+        
+        const breedInput = document.getElementById('breed');
+        if (breedInput) breedInput.value = animalData.breed || '';
+        
+        const categorySelect = document.getElementById('animalCategory');
+        if (categorySelect) categorySelect.value = animalData.category || 'vacuno';
+        
+        const sexSelect = document.getElementById('animalSex');
+        if (sexSelect) sexSelect.value = animalData.sex || 'macho';
+        
+        const ageInput = document.getElementById('age');
+        if (ageInput) ageInput.value = animalData.age || '';
+        
+        const weightInput = document.getElementById('weight');
+        if (weightInput) weightInput.value = animalData.weight || '';
+        
+        const fincaSelect = document.getElementById('animalFinca');
+        if (fincaSelect) fincaSelect.value = animalData.finca || '';
+        
+        // Set form to edit mode
+        if (animalForm) {
+            animalForm.setAttribute('data-edit-mode', 'true');
+            animalForm.setAttribute('data-card-id', animalData.id);
+        }
+        
+        // Change modal title
+        const modalTitle = animalModal.querySelector('h2');
+        if (modalTitle) modalTitle.textContent = 'Editar Animal';
+        
+        // Show modal
+        animalModal.style.display = 'block';
+    }
+
+    function openBirthEditModal(birthData) {
+        if (!birthData) return;
+        
+        const birthModal = document.getElementById('birthRegistrationModal');
+        if (!birthModal) return;
+        
+        // Set form values
+        const birthForm = document.getElementById('birthRegistrationForm');
+        if (!birthForm) return;
+        
+        const idInput = document.getElementById('birthAnimalId');
+        if (idInput) idInput.value = birthData.animalId || '';
+        
+        const breedInput = document.getElementById('birthBreed');
+        if (breedInput) breedInput.value = birthData.breed || '';
+        
+        const categorySelect = document.getElementById('birthAnimalCategory');
+        if (categorySelect) categorySelect.value = birthData.category || 'vacuno';
+        
+        const sexSelect = document.getElementById('birthAnimalSex');
+        if (sexSelect) sexSelect.value = birthData.sex || 'macho';
+        
+        const dateInput = document.getElementById('birthDateInput');
+        if (dateInput) dateInput.value = birthData.birthDate || '';
+        
+        const motherInput = document.getElementById('birthMotherCrotal');
+        if (motherInput) motherInput.value = birthData.motherCrotal || '';
+        
+        const weightInput = document.getElementById('birthWeightInput');
+        if (weightInput) weightInput.value = birthData.birthWeight || '';
+        
+        const conditionSelect = document.getElementById('birthConditionInput');
+        if (conditionSelect) conditionSelect.value = birthData.birthCondition || 'normal';
+        
+        const notesInput = document.getElementById('birthNotesInput');
+        if (notesInput) notesInput.value = birthData.birthNotes || '';
+        
+        const fincaSelect = document.getElementById('birthFinca');
+        if (fincaSelect) fincaSelect.value = birthData.finca || '';
+        
+        // Change modal title
+        const modalTitle = birthModal.querySelector('h2');
+        if (modalTitle) modalTitle.textContent = 'Editar Registro de Nacimiento';
+        
+        // Show modal
+        birthModal.style.display = 'block';
+    }
+
+    function updateAnimalCard(animalData) {
+        const existingCard = document.getElementById(animalData.id);
+        if (existingCard) {
+            const newCard = createAnimalCard(animalData);
+            existingCard.replaceWith(newCard);
+            initAnimalCardListeners(newCard);
+        }
+    }
+
+    // Load animals from localStorage
+    const animals = JSON.parse(localStorage.getItem('animals') || '[]');
+    
+    // Add regular animals to their container
+    const regularAnimals = animals.filter(a => a.type !== 'birth');
+    regularAnimals.forEach(animal => addAnimalToGrid(animal));
+    
+    // Add birth records to their container
+    const birthRecords = animals.filter(a => a.type === 'birth');
+    birthRecords.forEach(birth => addBirthToGrid(birth));
     
     // Botones para gestionar fincas
     const addFincaBtn = document.querySelector('.add-finca-btn');
@@ -913,76 +1017,121 @@ document.addEventListener('DOMContentLoaded', function() {
         fincaForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const fincaName = document.getElementById('newFincaName').value;
-            const location = document.getElementById('newLocation').value;
-            const farmSize = document.getElementById('newFarmSize').value;
+            const fincaData = {
+                id: currentEditingFincaId || `finca-${Date.now()}`,
+                name: document.getElementById('newFincaName').value,
+                location: document.getElementById('newLocation').value,
+                size: document.getElementById('newFarmSize').value,
+                cattleType: document.getElementById('newCattleType').value,
+                timestamp: new Date().toISOString()
+            };
+
+            let fincas = JSON.parse(localStorage.getItem('fincas') || '[]');
             
-            // En una implementación real, guardaríamos la finca en la BD
-            // Por ahora, simplemente añadimos una tarjeta a la interfaz
-            
-            // Añadir al grid de fincas
-            const fincasGrid = document.querySelector('.fincas-grid');
-            if (fincasGrid) {
-                const newFincaCard = document.createElement('div');
-                newFincaCard.className = 'finca-card';
-                newFincaCard.innerHTML = `
-                    <h3>${fincaName}</h3>
-                    <p><strong>Ubicación:</strong> ${location}</p>
-                    <p><strong>Tamaño:</strong> ${farmSize} hectáreas</p>
-                    <p><strong>Animales:</strong> 0</p>
-                    <div class="finca-actions">
-                        <button class="btn-icon" title="Ver detalles">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn-icon" title="Editar">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon btn-delete delete-finca" title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-                fincasGrid.appendChild(newFincaCard);
-                
-                // Añadir el botón de eliminar a la nueva finca
-                const deleteBtn = newFincaCard.querySelector('.delete-finca');
-                deleteBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (confirm('¿Estás seguro de que quieres eliminar esta finca?')) {
-                        newFincaCard.remove();
-                        
-                        // Eliminar también del selector de fincas
-                        const optionValue = fincaName.toLowerCase().replace(/\s+/g, '').trim();
-                        const option = document.querySelector(`#fincaSelector option[value="${optionValue}"]`);
-                        if (option) {
-                            option.remove();
-                        }
-                        
-                        alert('Finca eliminada correctamente');
-                    }
-                });
-                
-                // Añadir al selector de fincas
-                const fincaSelector = document.getElementById('fincaSelector');
-                if (fincaSelector) {
-                    const option = document.createElement('option');
-                    option.value = fincaName.toLowerCase().replace(/\s+/g, '').trim();
-                    option.textContent = fincaName;
-                    fincaSelector.appendChild(option);
-                    
-                    // Si es la primera finca, seleccionarla automáticamente
-                    if (fincaSelector.options.length === 1) {
-                        document.getElementById('currentFincaName').textContent = fincaName;
-                    }
+            if (fincaEditMode) {
+                // Update existing farm
+                const index = fincas.findIndex(f => f.id === currentEditingFincaId);
+                if (index !== -1) {
+                    fincas[index] = fincaData;
                 }
-                
-                // Cerrar modal y mostrar confirmación
-                fincaModal.style.display = 'none';
-                alert('Finca añadida correctamente');
-                loadFincasInSelectors();
+            } else {
+                // Add new farm
+                fincas.push(fincaData);
             }
+
+            localStorage.setItem('fincas', JSON.stringify(fincas));
+            loadFincas(); // New function to load/render farms
+            loadFincasInSelectors(); // Update selectors with new fincas
+            resetFincaForm();
+            fincaModal.style.display = 'none';
         });
     }
+    
+    // New function to load farms from localStorage and render
+    function loadFincas() {
+        const fincasGrid = document.querySelector('.fincas-grid');
+        fincasGrid.innerHTML = '';
+        
+        const fincas = JSON.parse(localStorage.getItem('fincas') || '[]');
+        
+        fincas.forEach(finca => {
+            const card = document.createElement('div');
+            card.className = 'finca-card';
+            card.dataset.fincaId = finca.id;
+            card.innerHTML = `
+                <h3>${finca.name}</h3>
+                <p><strong>Ubicación:</strong> ${finca.location}</p>
+                <p><strong>Tamaño:</strong> ${finca.size} hectáreas</p>
+                <p><strong>Tipo de Ganado:</strong> ${finca.cattleType || 'No especificado'}</p>
+                <div class="finca-actions">
+                    <button class="btn-icon edit-finca" title="Editar">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon btn-delete delete-finca" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            // Add edit/delete handlers
+            card.querySelector('.edit-finca').addEventListener('click', () => openFincaEditModal(finca));
+            card.querySelector('.delete-finca').addEventListener('click', handleDeleteFinca);
+            
+            fincasGrid.appendChild(card);
+        });
+    }
+    
+    // New function to open farm edit modal
+    function openFincaEditModal(finca) {
+        fincaEditMode = true;
+        currentEditingFincaId = finca.id;
+        
+        document.getElementById('newFincaName').value = finca.name;
+        document.getElementById('newLocation').value = finca.location;
+        document.getElementById('newFarmSize').value = finca.size;
+        document.getElementById('newCattleType').value = finca.cattleType;
+        
+        document.getElementById('fincaModalTitle').textContent = 'Editar Finca';
+        fincaModal.style.display = 'block';
+    }
+    
+    // Modified delete handler
+    function handleDeleteFinca(e) {
+        const card = e.target.closest('.finca-card');
+        const fincaId = card.dataset.fincaId;
+
+        if (confirm('¿Estás seguro de que quieres eliminar esta finca?')) {
+            let fincas = JSON.parse(localStorage.getItem('fincas') || '[]');
+            fincas = fincas.filter(f => f.id !== fincaId);
+            localStorage.setItem('fincas', JSON.stringify(fincas));
+            card.remove();
+            loadFincas();
+            loadFincasInSelectors();
+        }
+    }
+    
+    // Modified finca form reset
+    function resetFincaForm() {
+        fincaForm.reset();
+        fincaEditMode = false;
+        currentEditingFincaId = null;
+        document.getElementById('fincaModalTitle').textContent = 'Nueva Finca';
+    }
+    
+    // Add initial load when fincas section is shown
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const sectionId = this.getAttribute('data-section');
+            if (sectionId === 'fincas') loadFincas();
+        });
+    });
+    
+    // Initialize on first load
+    document.addEventListener('DOMContentLoaded', loadFincas);
+    
+    // Variable para modo de edición de finca
+    let fincaEditMode = false;
+    let currentEditingFincaId = null;
     
     // Añadir funcionalidad para mover animales entre fincas
     const moveAnimalBtns = document.querySelectorAll('.move-animal');
@@ -1157,6 +1306,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Mostrar el contenido correspondiente
                 const tabId = this.getAttribute('data-reports-tab') + 'Tab';
                 document.getElementById(tabId).classList.add('active');
+                
+                // Load saved files when switching to a tab
+                loadSavedFiles();
             });
         });
     }
@@ -1173,7 +1325,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         guiasFileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
-                handleFileUpload(this.files, guiasFilesList, document.getElementById('guiaDate').value);
+                handleFileUpload(this.files, guiasFilesList, 'Guía');
             }
         });
     }
@@ -1190,7 +1342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         pacFileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
-                handleFileUpload(this.files, pacFilesList);
+                handleFileUpload(this.files, pacFilesList, 'PAC');
             }
         });
     }
@@ -1220,7 +1372,210 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ... existing code ...
+    // Function to load saved files on page load
+    function loadSavedFiles() {
+        // Load PAC files
+        const pacFilesList = document.getElementById('pacFilesList');
+        if (pacFilesList) {
+            const pacFiles = JSON.parse(localStorage.getItem('pacFiles') || '[]');
+            if (pacFiles.length > 0) {
+                // Clear container first
+                pacFilesList.innerHTML = '';
+                
+                pacFiles.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.id = file.id;
+                    
+                    fileItem.innerHTML = `
+                        <i class="fas fa-file"></i>
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-type">${file.type}</span>
+                        <span class="file-size">${(file.size / 1024).toFixed(2)} KB</span>
+                        <div class="file-actions">
+                            <button class="btn-icon btn-delete delete-file" data-file-id="${file.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    pacFilesList.appendChild(fileItem);
+                    
+                    // Add delete handler
+                    const deleteBtn = fileItem.querySelector('.delete-file');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', function() {
+                            const fileId = this.getAttribute('data-file-id');
+                            // Remove from UI
+                            document.getElementById(fileId).remove();
+                            // Remove from saved files
+                            const pacFiles = JSON.parse(localStorage.getItem('pacFiles') || '[]');
+                            const updatedFiles = pacFiles.filter(f => f.id !== fileId);
+                            localStorage.setItem('pacFiles', JSON.stringify(updatedFiles));
+                            
+                            // Add empty message if no files left
+                            if (updatedFiles.length === 0) {
+                                const emptyMessage = document.createElement('p');
+                                emptyMessage.className = 'empty-list-message';
+                                emptyMessage.textContent = 'No hay archivos subidos. Usa el botón "Subir Archivos" para añadir documentación.';
+                                pacFilesList.appendChild(emptyMessage);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+        
+        // Load Guia files
+        const guiasFilesList = document.getElementById('guiasFilesList');
+        if (guiasFilesList) {
+            const guiaFiles = JSON.parse(localStorage.getItem('guiaFiles') || '[]');
+            if (guiaFiles.length > 0) {
+                // Clear container first
+                guiasFilesList.innerHTML = '';
+                
+                guiaFiles.forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.id = file.id;
+                    
+                    fileItem.innerHTML = `
+                        <i class="fas fa-file"></i>
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-type">${file.type}</span>
+                        <span class="file-size">${(file.size / 1024).toFixed(2)} KB</span>
+                        <div class="file-actions">
+                            <button class="btn-icon btn-delete delete-file" data-file-id="${file.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    guiasFilesList.appendChild(fileItem);
+                    
+                    // Add delete handler
+                    const deleteBtn = fileItem.querySelector('.delete-file');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', function() {
+                            const fileId = this.getAttribute('data-file-id');
+                            // Remove from UI
+                            document.getElementById(fileId).remove();
+                            // Remove from saved files
+                            const guiaFiles = JSON.parse(localStorage.getItem('guiaFiles') || '[]');
+                            const updatedFiles = guiaFiles.filter(f => f.id !== fileId);
+                            localStorage.setItem('guiaFiles', JSON.stringify(updatedFiles));
+                            
+                            // Add empty message if no files left
+                            if (updatedFiles.length === 0) {
+                                const emptyMessage = document.createElement('p');
+                                emptyMessage.className = 'empty-list-message';
+                                emptyMessage.textContent = 'No hay guías registradas. Usa el botón "Subir Guía" para añadir documentación.';
+                                guiasFilesList.appendChild(emptyMessage);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+    
+    // Function to handle file upload
+    function handleFileUpload(files, container, type) {
+        if (!files || !container) return;
+        
+        // Clear empty message if it exists
+        const emptyMessage = container.querySelector('.empty-list-message');
+        if (emptyMessage) {
+            emptyMessage.remove();
+        }
+        
+        // Get existing files from localStorage or initialize empty array
+        const storageKey = type === 'Guía' ? 'guiaFiles' : 'pacFiles';
+        let savedFiles = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        
+        Array.from(files).forEach(file => {
+            const fileId = `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            
+            // Create file object to save
+            const fileObject = {
+                id: fileId,
+                name: file.name,
+                type: type,
+                size: file.size,
+                lastModified: file.lastModified,
+                date: new Date().toISOString()
+            };
+            
+            // Add to savedFiles array
+            savedFiles.push(fileObject);
+            
+            // Create UI element
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.id = fileId;
+            
+            fileItem.innerHTML = `
+                <i class="fas fa-file"></i>
+                <span class="file-name">${file.name}</span>
+                <span class="file-type">${type}</span>
+                <span class="file-size">${(file.size / 1024).toFixed(2)} KB</span>
+                <div class="file-actions">
+                    <button class="btn-icon btn-delete delete-file" data-file-id="${fileId}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(fileItem);
+            
+            // Add delete handler
+            const deleteBtn = fileItem.querySelector('.delete-file');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function() {
+                    const fileId = this.getAttribute('data-file-id');
+                    // Remove from UI
+                    document.getElementById(fileId).remove();
+                    // Remove from saved files
+                    savedFiles = savedFiles.filter(f => f.id !== fileId);
+                    localStorage.setItem(storageKey, JSON.stringify(savedFiles));
+                    
+                    // Add empty message if no files left
+                    if (savedFiles.length === 0 && container.children.length === 0) {
+                        const emptyMessage = document.createElement('p');
+                        emptyMessage.className = 'empty-list-message';
+                        emptyMessage.textContent = `No hay ${type === 'Guía' ? 'guías registradas' : 'archivos subidos'}. Usa el botón "Subir ${type === 'Guía' ? 'Guía' : 'Archivos'}" para añadir documentación.`;
+                        container.appendChild(emptyMessage);
+                    }
+                });
+            }
+        });
+        
+        // Save to localStorage
+        localStorage.setItem(storageKey, JSON.stringify(savedFiles));
+    }
+    
+    // Add loadSavedFiles to DOMContentLoaded event
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... existing code ...
+        
+        // Load saved files
+        loadSavedFiles();
+        
+        // ... existing code ...
+    });
+    
+    // Also make sure to load files when the reports section is clicked in the sidebar
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const sectionId = this.getAttribute('data-section');
+            
+            if (sectionId === 'reports') {
+                loadSavedFiles();
+            }
+            
+            // ... existing code ...
+        });
+    });
     
     // Finanzas
     const addTransactionBtn = document.getElementById('addTransactionBtn');
@@ -2440,7 +2795,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Función para calcular la recomendación de alimentación
-    function calculateFeedRecommendation() {
+    function calculateFeedingRecord() {
         const animalType = document.getElementById('animalTypeCalc').value;
         const weight = parseFloat(document.getElementById('animalWeightCalc').value);
         const age = parseInt(document.getElementById('animalAgeCalc').value);
@@ -2542,26 +2897,26 @@ document.addEventListener('DOMContentLoaded', function() {
         loadTasks();
 
         // Evento para abrir el modal de tareas
-        addTaskBtn.addEventListener('click', () => {
-            openTaskModal();
-        });
+        if (addTaskBtn) {
+            addTaskBtn.addEventListener('click', () => openTaskModal());
+        }
 
         // Evento para cerrar el modal de tareas
-        closeTaskModal.addEventListener('click', () => {
-            closeTaskModalFn();
-        });
-        cancelTaskBtn.addEventListener('click', () => {
-            closeTaskModalFn();
-        });
+        if (closeTaskModal) {
+            closeTaskModal.addEventListener('click', () => closeTaskModalFn());
+        }
+        if (cancelTaskBtn) {
+            cancelTaskBtn.addEventListener('click', () => closeTaskModalFn());
+        }
         
         function closeTaskModalFn() {
             taskModal.style.display = 'none';
         }
 
         // Evento para guardar la tarea
-        saveTaskBtn.addEventListener('click', () => {
-            saveTask();
-        });
+        if (saveTaskBtn) {
+            saveTaskBtn.addEventListener('click', () => saveTask());
+        }
 
         // Función para cargar tareas desde localStorage
         function loadTasks() {
@@ -2705,16 +3060,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const addAttachmentBtn = document.getElementById('addAttachment');
-        addAttachmentBtn.addEventListener('click', () => {
-            const attachmentName = prompt('Nombre del archivo:');
-            if (attachmentName) {
-                const attachment = {
-                    name: attachmentName,
-                    url: '#'
-                };
-                addAttachmentToList(attachment);
-            }
-        });
+        if (addAttachmentBtn) {
+            addAttachmentBtn.addEventListener('click', () => {
+                const attachmentName = prompt('Nombre del archivo:');
+                if (attachmentName) {
+                    const attachment = {
+                        name: attachmentName,
+                        url: '#'
+                    };
+                    addAttachmentToList(attachment);
+                }
+            });
+        }
 
         function addAttachmentToList(attachment) {
             const attachmentList = document.getElementById('attachmentList');
@@ -2762,9 +3119,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar inventario
     function initInventory() {
         loadInventoryItems();
-        updateInventoryStats();
     }
-
+    
     // Cargar items en la grid
     function loadInventoryItems() {
         inventoryGrid.innerHTML = '';
@@ -2777,7 +3133,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3>${item.name}</h3>
                     <div class="inventory-meta">
                         <span>Cantidad: ${item.quantity}</span>
-                        <span class="inventory-category">${item.category}</span>
                     </div>
                     ${item.files.length > 0 ? `
                     <div class="file-list">
@@ -2801,46 +3156,47 @@ document.addEventListener('DOMContentLoaded', function() {
             inventoryGrid.appendChild(card);
         });
     }
+    
+    // Manejar formulario de inventario
+    const inventoryForm = document.getElementById('inventoryForm');
+    if (inventoryForm) {
+        inventoryForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const itemData = {
+                id: document.getElementById('editItemId').value || Date.now().toString(),
+                name: document.getElementById('itemName').value,
+                category: document.getElementById('itemCategory').value,
+                quantity: parseInt(document.getElementById('itemQuantity').value),
+                image: document.getElementById('imagePreview').querySelector('img')?.src || '',
+                files: Array.from(document.querySelectorAll('#attachedFiles li')).map(li => ({
+                    name: li.textContent.trim(),
+                    url: '#'
+                }))
+            };
 
-    // Actualizar estadísticas generales
-    function updateInventoryStats() {
-        // Actualiza contadores globales si es necesario
+            const editIndex = document.getElementById('editItemId').dataset.index;
+            
+            if (editIndex !== undefined) {
+                inventoryItems[editIndex] = itemData;
+            } else {
+                inventoryItems.push(itemData);
+            }
+
+            localStorage.setItem('inventory', JSON.stringify(inventoryItems));
+            inventoryModal.style.display = 'none';
+            loadInventoryItems();
+        });
     }
 
-    // Manejar formulario de inventario
-    document.getElementById('inventoryForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const itemData = {
-            id: document.getElementById('editItemId').value || Date.now().toString(),
-            name: document.getElementById('itemName').value,
-            category: document.getElementById('itemCategory').value,
-            quantity: parseInt(document.getElementById('itemQuantity').value),
-            image: document.getElementById('imagePreview').querySelector('img')?.src || '',
-            files: Array.from(document.querySelectorAll('#attachedFiles li')).map(li => ({
-                name: li.textContent.trim(),
-                url: '#'
-            }))
-        };
-
-        const editIndex = document.getElementById('editItemId').dataset.index;
-        
-        if (editIndex !== undefined) {
-            inventoryItems[editIndex] = itemData;
-        } else {
-            inventoryItems.push(itemData);
-        }
-
-        localStorage.setItem('inventory', JSON.stringify(inventoryItems));
-        inventoryModal.style.display = 'none';
-        loadInventoryItems();
-    });
-
     // Abrir modal para nuevo/editar item
-    addInventoryBtn.addEventListener('click', () => openInventoryModal());
+    if (addInventoryBtn) {
+        addInventoryBtn.addEventListener('click', () => openInventoryModal());
+    }
     document.addEventListener('click', (e) => {
-        if (e.target.closest('.edit-inventory')) {
-            const index = e.target.closest('button').dataset.index;
+        const editButton = e.target.closest('.edit-inventory');
+        if (editButton && editButton.dataset.index !== undefined) {
+            const index = editButton.dataset.index;
             openInventoryModal(index);
         }
     });
@@ -2866,7 +3222,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             item.files.forEach(file => {
-                addFileToList(file.name);
+                addFileToList(file);
             });
 
             document.getElementById('inventoryModalTitle').textContent = 'Editar Artículo';
@@ -2878,40 +3234,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Manejar subida de imágenes
-    document.getElementById('itemImage').addEventListener('change', function(e) {
-        const preview = document.getElementById('imagePreview');
-        preview.innerHTML = '';
-        
-        if (this.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxWidth = '100%';
-                img.style.borderRadius = '8px';
-                preview.appendChild(img);
+    const itemImageInput = document.getElementById('itemImage');
+    if (itemImageInput) {
+        itemImageInput.addEventListener('change', function(e) {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            if (this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100%';
+                    img.style.borderRadius = '8px';
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(this.files[0]);
             }
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
+        });
+    }
 
     // Manejar subida de archivos
-    document.getElementById('uploadFilesBtn').addEventListener('click', () => {
-        document.getElementById('inventoryFiles').click();
-    });
-
-    document.getElementById('inventoryFiles').addEventListener('change', function() {
-        Array.from(this.files).forEach(file => {
-            addFileToList(file.name);
+    const inventoryFilesInput = document.getElementById('inventoryFiles');
+    if (inventoryFilesInput) {
+        inventoryFilesInput.addEventListener('change', function() {
+            Array.from(this.files).forEach(file => {
+                addFileToList(file);
+            });
         });
-    });
+    }
 
-    function addFileToList(filename) {
+    function addFileToList(file) {
         const attachmentList = document.getElementById('attachedFiles');
         const attachmentItem = document.createElement('li');
         attachmentItem.innerHTML = `
             <i class="fas fa-file"></i>
-            ${filename}
+            ${file.name}
         `;
         attachmentList.appendChild(attachmentItem);
 
@@ -2923,8 +3281,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Manejar eliminación de items
     document.addEventListener('click', (e) => {
-        if (e.target.closest('.delete-inventory')) {
-            const index = e.target.closest('button').dataset.index;
+        const deleteButton = e.target.closest('.delete-inventory');
+        if (deleteButton && deleteButton.dataset.index !== undefined) {
+            const index = deleteButton.dataset.index;
             if (confirm('¿Eliminar este artículo permanentemente?')) {
                 inventoryItems.splice(index, 1);
                 localStorage.setItem('inventory', JSON.stringify(inventoryItems));
@@ -3003,7 +3362,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Mes'
+                                }
+                            },
                             y: {
+                                title: {
+                                    display: true,
+                                    text: 'Importe (€)'
+                                },
                                 beginAtZero: true
                             }
                         }
@@ -3122,221 +3491,247 @@ document.addEventListener('DOMContentLoaded', function() {
         const cancelPasswordBtn = document.getElementById('cancelPasswordChange');
         const passwordForm = document.getElementById('passwordForm');
 
-        changePasswordBtn.addEventListener('click', function() {
-            passwordModal.style.display = 'block';
-        });
-        closePasswordModal.addEventListener('click', function() {
-            passwordModal.style.display = 'none';
-        });
-        cancelPasswordBtn.addEventListener('click', function() {
-            passwordModal.style.display = 'none';
-        });
+        if (changePasswordBtn) {
+            changePasswordBtn.addEventListener('click', function() {
+                passwordModal.style.display = 'block';
+            });
+        }
+        if (closePasswordModal) {
+            closePasswordModal.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+            });
+        }
+        if (cancelPasswordBtn) {
+            cancelPasswordBtn.addEventListener('click', function() {
+                passwordModal.style.display = 'none';
+            });
+        }
         window.addEventListener('click', function(event) {
             if (event.target === passwordModal) {
                 passwordModal.style.display = 'none';
             }
         });
-        passwordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            if (newPassword !== confirmPassword) {
-                alert('Las contraseñas no coinciden');
-                return;
-            }
-            updateSettingsBackend('/api/changePassword', { currentPassword, newPassword })
-              .then(response => {
-                  if (response.status === 'success') {
-                      alert('Contraseña cambiada correctamente');
-                      passwordModal.style.display = 'none';
-                      passwordForm.reset();
-                  } else {
-                      alert('Error al cambiar la contraseña');
-                  }
-              })
-              .catch(err => console.error(err));
-        });
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                if (newPassword !== confirmPassword) {
+                    alert('Las contraseñas no coinciden');
+                    return;
+                }
+                updateSettingsBackend('/api/changePassword', { currentPassword, newPassword })
+                  .then(response => {
+                      if (response.status === 'success') {
+                          alert('Contraseña cambiada correctamente');
+                          passwordModal.style.display = 'none';
+                          passwordForm.reset();
+                      } else {
+                          alert('Error al cambiar la contraseña');
+                      }
+                  })
+                  .catch(err => console.error(err));
+            });
+        }
 
         // Gestión de apariencia: tipografía y color principal
         const fontSelector = document.getElementById('fontSelector');
         const fontPreview = document.getElementById('fontPreview');
-        fontSelector.addEventListener('change', function() {
-            fontPreview.style.fontFamily = this.value;
-        });
-        const applyFontBtn = document.getElementById('applyFontBtn');
-        applyFontBtn.addEventListener('click', function() {
-            const selectedFont = fontSelector.value;
-            // Extrae el nombre de la fuente removiendo comillas y obteniendo la primera parte
-            let fontName = selectedFont.split(',')[0].replace(/['"]/g, '');
-            // Lista de fuentes Google que se cargarán dinámicamente
-            const googleFonts = ["Roboto", "Open Sans", "Lato", "Montserrat", "Nunito"];
-            if (googleFonts.includes(fontName)) {
-                WebFont.load({
-                    google: {
-                        families: [fontName]
-                    },
-                    active: function() {
+        if (fontSelector && fontPreview) {
+            fontSelector.addEventListener('change', function() {
+                fontPreview.style.fontFamily = this.value;
+            });
+            const applyFontBtn = document.getElementById('applyFontBtn');
+            if (applyFontBtn) {
+                applyFontBtn.addEventListener('click', function() {
+                    const selectedFont = fontSelector.value;
+                    // Extrae el nombre de la fuente removiendo comillas y obteniendo la primera parte
+                    let fontName = selectedFont.split(',')[0].replace(/['"]/g, '');
+                    // Lista de fuentes Google que se cargarán dinámicamente
+                    const googleFonts = ["Roboto", "Open Sans", "Lato", "Montserrat", "Nunito"];
+                    if (googleFonts.includes(fontName)) {
+                        WebFont.load({
+                            google: {
+                                families: [fontName]
+                            },
+                            active: function() {
+                                document.documentElement.style.setProperty('--font-family', selectedFont);
+                                localStorage.setItem('appFontFamily', selectedFont);
+                                alert('Tipografía cambiada correctamente');
+                            },
+                            inactive: function() {
+                                // Si falla la carga, se aplica la fuente de todos modos
+                                document.documentElement.style.setProperty('--font-family', selectedFont);
+                                localStorage.setItem('appFontFamily', selectedFont);
+                                alert('Tipografía cambiada (carga fallida)');
+                            }
+                        });
+                    } else {
                         document.documentElement.style.setProperty('--font-family', selectedFont);
                         localStorage.setItem('appFontFamily', selectedFont);
                         alert('Tipografía cambiada correctamente');
-                    },
-                    inactive: function() {
-                        // Si falla la carga, se aplica la fuente de todos modos
-                        document.documentElement.style.setProperty('--font-family', selectedFont);
-                        localStorage.setItem('appFontFamily', selectedFont);
-                        alert('Tipografía cambiada (carga fallida)');
                     }
                 });
-            } else {
-                document.documentElement.style.setProperty('--font-family', selectedFont);
-                localStorage.setItem('appFontFamily', selectedFont);
-                alert('Tipografía cambiada correctamente');
             }
-        });
+        }
         const primaryColorPicker = document.getElementById('primaryColorPicker');
-        primaryColorPicker.addEventListener('change', function() {
-            const color = this.value;
-            updateSettingsBackend('/api/appearance', { type: 'primaryColor', value: color })
-              .then(response => {
-                  if (response.status === 'success') {
-                      document.documentElement.style.setProperty('--primary-color', color);
-                      localStorage.setItem('appPrimaryColor', color);
-                  } else {
-                      alert('Error al cambiar el color principal');
-                  }
-              })
-              .catch(err => console.error(err));
-        });
-        const resetAppearanceBtn = document.getElementById('resetAppearanceBtn');
-        resetAppearanceBtn.addEventListener('click', function() {
-            if (confirm('¿Estás seguro de que quieres restablecer la apariencia a los valores predeterminados?')) {
-                updateSettingsBackend('/api/appearance/reset', {})
+        if (primaryColorPicker) {
+            primaryColorPicker.addEventListener('change', function() {
+                const color = this.value;
+                updateSettingsBackend('/api/appearance', { type: 'primaryColor', value: color })
                   .then(response => {
                       if (response.status === 'success') {
-                          document.documentElement.style.setProperty('--font-family', '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif');
-                          fontSelector.value = '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
-                          fontPreview.style.fontFamily = '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
-                          document.documentElement.style.setProperty('--primary-color', '#4caf50');
-                          primaryColorPicker.value = '#4caf50';
-                          document.getElementById('fontSizeSelector').value = 'medium';
-                          document.getElementById('themeSelector').value = 'light';
-                          localStorage.removeItem('appFontFamily');
-                          localStorage.removeItem('appPrimaryColor');
-                          localStorage.removeItem('appFontSize');
-                          localStorage.removeItem('appTheme');
-                          alert('Apariencia restablecida a los valores predeterminados');
+                          document.documentElement.style.setProperty('--primary-color', color);
+                          localStorage.setItem('appPrimaryColor', color);
                       } else {
-                          alert('Error al restablecer la apariencia');
+                          alert('Error al cambiar el color principal');
                       }
                   })
                   .catch(err => console.error(err));
-            }
-        });
+            });
+        }
+        const resetAppearanceBtn = document.getElementById('resetAppearanceBtn');
+        if (resetAppearanceBtn) {
+            resetAppearanceBtn.addEventListener('click', function() {
+                if (confirm('¿Estás seguro de que quieres restablecer la apariencia a los valores predeterminados?')) {
+                    updateSettingsBackend('/api/appearance/reset', {})
+                      .then(response => {
+                          if (response.status === 'success') {
+                              document.documentElement.style.setProperty('--font-family', '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif');
+                              fontSelector.value = '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
+                              fontPreview.style.fontFamily = '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
+                              document.documentElement.style.setProperty('--primary-color', '#4caf50');
+                              primaryColorPicker.value = '#4caf50';
+                              document.getElementById('fontSizeSelector').value = 'medium';
+                              document.getElementById('themeSelector').value = 'light';
+                              localStorage.removeItem('appFontFamily');
+                              localStorage.removeItem('appPrimaryColor');
+                              localStorage.removeItem('appFontSize');
+                              localStorage.removeItem('appTheme');
+                              alert('Apariencia restablecida a los valores predeterminados');
+                          } else {
+                              alert('Error al restablecer la apariencia');
+                          }
+                      })
+                      .catch(err => console.error(err));
+                }
+            });
+        }
 
         // Guardar datos del usuario (nombre, correo)
         const saveAccountBtn = document.getElementById('saveAccountBtn');
-        saveAccountBtn.addEventListener('click', function() {
-            const userName = document.getElementById('userName').value;
-            const userEmail = document.getElementById('userEmail').value;
-            if (!userName || !userEmail) {
-                alert('Por favor, rellena todos los campos obligatorios');
-                return;
-            }
-            updateSettingsBackend('/api/user', { userName, userEmail })
-              .then(response => {
-                  if (response.status === 'success') {
-                      localStorage.setItem('userName', userName);
-                      localStorage.setItem('userEmail', userEmail);
-                      alert('Datos de cuenta guardados correctamente');
-                  } else {
-                      alert('Error al guardar datos de cuenta');
-                  }
-              })
-              .catch(err => console.error(err));
-        });
+        if (saveAccountBtn) {
+            saveAccountBtn.addEventListener('click', function() {
+                const userName = document.getElementById('userName').value;
+                const userEmail = document.getElementById('userEmail').value;
+                if (!userName || !userEmail) {
+                    alert('Por favor, rellena todos los campos obligatorios');
+                    return;
+                }
+                updateSettingsBackend('/api/user', { userName, userEmail })
+                  .then(response => {
+                      if (response.status === 'success') {
+                          localStorage.setItem('userName', userName);
+                          localStorage.setItem('userEmail', userEmail);
+                          alert('Datos de cuenta guardados correctamente');
+                      } else {
+                          alert('Error al guardar datos de cuenta');
+                      }
+                  })
+                  .catch(err => console.error(err));
+            });
+        }
 
         // Guardar configuración regional (idioma, formato de fecha y moneda)
         const saveRegionalBtn = document.getElementById('saveRegionalBtn');
-        saveRegionalBtn.addEventListener('click', function() {
-            const language = document.getElementById('languageSelector').value;
-            const dateFormat = document.getElementById('dateFormatSelector').value;
-            const currency = document.getElementById('currencySelector').value;
-            updateSettingsBackend('/api/regionalSettings', { language, dateFormat, currency })
-              .then(response => {
-                  if (response.status === 'success') {
-                      localStorage.setItem('appLanguage', language);
-                      localStorage.setItem('appDateFormat', dateFormat);
-                      localStorage.setItem('appCurrency', currency);
-                      alert('Configuración regional guardada correctamente');
-                  } else {
-                      alert('Error al guardar la configuración regional');
-                  }
-              })
-              .catch(err => console.error(err));
-        });
+        if (saveRegionalBtn) {
+            saveRegionalBtn.addEventListener('click', function() {
+                const language = document.getElementById('languageSelector').value;
+                const dateFormat = document.getElementById('dateFormatSelector').value;
+                const currency = document.getElementById('currencySelector').value;
+                updateSettingsBackend('/api/regionalSettings', { language, dateFormat, currency })
+                  .then(response => {
+                      if (response.status === 'success') {
+                          localStorage.setItem('appLanguage', language);
+                          localStorage.setItem('appDateFormat', dateFormat);
+                          localStorage.setItem('appCurrency', currency);
+                          alert('Configuración regional guardada correctamente');
+                      } else {
+                          alert('Error al guardar la configuración regional');
+                      }
+                  })
+                  .catch(err => console.error(err));
+            });
+        }
 
         // Guardar configuración de notificaciones
         const saveNotificationsBtn = document.getElementById('saveNotificationsBtn');
-        saveNotificationsBtn.addEventListener('click', function() {
-            const emailNotifications = document.getElementById('emailNotifications').checked;
-            const taskReminders = document.getElementById('taskReminders').checked;
-            const feedingAlerts = document.getElementById('feedingAlerts').checked;
-            const lowStockAlerts = document.getElementById('lowStockAlerts').checked;
-            updateSettingsBackend('/api/notifications', { emailNotifications, taskReminders, feedingAlerts, lowStockAlerts })
-              .then(response => {
-                  if (response.status === 'success') {
-                      localStorage.setItem('emailNotifications', emailNotifications);
-                      localStorage.setItem('taskReminders', taskReminders);
-                      localStorage.setItem('feedingAlerts', feedingAlerts);
-                      localStorage.setItem('lowStockAlerts', lowStockAlerts);
-                      alert('Configuración de notificaciones guardada correctamente');
-                  } else {
-                      alert('Error al guardar configuración de notificaciones');
-                  }
-              })
-              .catch(err => console.error(err));
-        });
+        if (saveNotificationsBtn) {
+            saveNotificationsBtn.addEventListener('click', function() {
+                const emailNotifications = document.getElementById('emailNotifications').checked;
+                const taskReminders = document.getElementById('taskReminders').checked;
+                const feedingAlerts = document.getElementById('feedingAlerts').checked;
+                const lowStockAlerts = document.getElementById('lowStockAlerts').checked;
+                updateSettingsBackend('/api/notifications', { emailNotifications, taskReminders, feedingAlerts, lowStockAlerts })
+                  .then(response => {
+                      if (response.status === 'success') {
+                          localStorage.setItem('emailNotifications', emailNotifications);
+                          localStorage.setItem('taskReminders', taskReminders);
+                          localStorage.setItem('feedingAlerts', feedingAlerts);
+                          localStorage.setItem('lowStockAlerts', lowStockAlerts);
+                          alert('Configuración de notificaciones guardada correctamente');
+                      } else {
+                          alert('Error al guardar configuración de notificaciones');
+                      }
+                  })
+                  .catch(err => console.error(err));
+            });
+        }
 
         // Guardar configuración de privacidad (sincronización, análisis de uso)
         const savePrivacyBtn = document.getElementById('savePrivacyBtn');
-        savePrivacyBtn.addEventListener('click', function() {
-            const localStorageToggle = document.getElementById('localStorageToggle').checked;
-            const cloudSyncToggle = document.getElementById('cloudSyncToggle').checked;
-            const analyticsToggle = document.getElementById('analyticsToggle').checked;
-            updateSettingsBackend('/api/privacy', { localStorageEnabled: localStorageToggle, cloudSyncEnabled: cloudSyncToggle, analyticsEnabled: analyticsToggle })
-              .then(response => {
-                  if (response.status === 'success') {
-                      localStorage.setItem('localStorageEnabled', localStorageToggle);
-                      localStorage.setItem('cloudSyncEnabled', cloudSyncToggle);
-                      localStorage.setItem('analyticsEnabled', analyticsToggle);
-                      alert('Configuración de privacidad guardada correctamente');
-                  } else {
-                      alert('Error al guardar configuración de privacidad');
-                  }
-              })
-              .catch(err => console.error(err));
-        });
+        if (savePrivacyBtn) {
+            savePrivacyBtn.addEventListener('click', function() {
+                const localStorageToggle = document.getElementById('localStorageToggle').checked;
+                const cloudSyncToggle = document.getElementById('cloudSyncToggle').checked;
+                const analyticsToggle = document.getElementById('analyticsToggle').checked;
+                updateSettingsBackend('/api/privacy', { localStorageEnabled: localStorageToggle, cloudSyncEnabled: cloudSyncToggle, analyticsEnabled: analyticsToggle })
+                  .then(response => {
+                      if (response.status === 'success') {
+                          localStorage.setItem('localStorageEnabled', localStorageToggle);
+                          localStorage.setItem('cloudSyncEnabled', cloudSyncToggle);
+                          localStorage.setItem('analyticsEnabled', analyticsToggle);
+                          alert('Configuración de privacidad guardada correctamente');
+                      } else {
+                          alert('Error al guardar configuración de privacidad');
+                      }
+                  })
+                  .catch(err => console.error(err));
+            });
+        }
 
         // Guardar configuración general (página inicial, auto-guardado, etc.)
         const saveGeneralBtn = document.getElementById('saveGeneralBtn');
-        saveGeneralBtn.addEventListener('click', function() {
-            const startupSection = document.getElementById('startupSection').value;
-            const dataSaverMode = document.getElementById('dataSaverMode').checked;
-            const autoSaveToggle = document.getElementById('autoSaveToggle').checked;
-            updateSettingsBackend('/api/general', { startupSection, dataSaverMode, autoSaveEnabled: autoSaveToggle })
-              .then(response => {
-                  if (response.status === 'success') {
-                      localStorage.setItem('startupSection', startupSection);
-                      localStorage.setItem('dataSaverMode', dataSaverMode);
-                      localStorage.setItem('autoSaveEnabled', autoSaveToggle);
-                      alert('Configuración general guardada correctamente');
-                  } else {
-                      alert('Error al guardar configuración general');
-                  }
-              })
-              .catch(err => console.error(err));
-        });
+        if (saveGeneralBtn) {
+            saveGeneralBtn.addEventListener('click', function() {
+                const startupSection = document.getElementById('startupSection').value;
+                const dataSaverMode = document.getElementById('dataSaverMode').checked;
+                const autoSaveToggle = document.getElementById('autoSaveToggle').checked;
+                updateSettingsBackend('/api/general', { startupSection, dataSaverMode, autoSaveEnabled: autoSaveToggle })
+                  .then(response => {
+                      if (response.status === 'success') {
+                          localStorage.setItem('startupSection', startupSection);
+                          localStorage.setItem('dataSaverMode', dataSaverMode);
+                          localStorage.setItem('autoSaveEnabled', autoSaveToggle);
+                          alert('Configuración general guardada correctamente');
+                      } else {
+                          alert('Error al guardar configuración general');
+                      }
+                  })
+                  .catch(err => console.error(err));
+            });
+        }
         
         const deleteAccountBtn = document.getElementById('deleteAccountBtn');
         if (deleteAccountBtn) {
@@ -3469,7 +3864,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadToggleSetting('dataSaverMode', 'dataSaverMode', false);
         loadToggleSetting('autoSaveToggle', 'autoSaveEnabled');
     }
-    
+
     // Aplicar el tema guardado
     function applyTheme() {
         const savedTheme = localStorage.getItem('appTheme') || 'light';
@@ -3527,7 +3922,6 @@ function initActivitiesSection() {
     const closeActivityModal = document.querySelector('.close-modal');
     const cancelActivityBtn = document.getElementById('cancelActivity');
     const activityForm = document.getElementById('activityForm');
-    const activitySearch = document.getElementById('activitySearch');
     const responsibleFilter = document.getElementById('activityResponsibleFilter');
     
     loadActivities();
@@ -3566,13 +3960,6 @@ function initActivitiesSection() {
         });
     }
     
-    // Búsqueda de actividades
-    if (activitySearch) {
-        activitySearch.addEventListener('input', function() {
-            filterActivities();
-        });
-    }
-    
     // Filtrar por responsable
     if (responsibleFilter) {
         responsibleFilter.addEventListener('change', function() {
@@ -3608,6 +3995,9 @@ function loadActivities() {
 
 // Añadir una actividad a la tabla
 function addActivityToTable(activity) {
+    document.querySelectorAll('.activity-item').forEach((item) => {
+        item.remove();
+    });
     const activityList = document.getElementById('activitiesTableBody');
     if (!activityList) return;
     
@@ -3646,8 +4036,8 @@ function addActivityToTable(activity) {
         <td>
             <button class="btn-icon edit-activity" data-id="${activity.id}" title="Editar">
                 <i class="fas fa-edit"></i>
-            </button>
-            <button class="btn-icon btn-delete delete-activity" data-id="${activity.id}" title="Eliminar">
+                        </button>
+            <button class="btn-icon delete-activity" data-id="${activity.id}" title="Eliminar">
                 <i class="fas fa-trash"></i>
             </button>
             <button class="btn-icon complete-activity" data-id="${activity.id}" title="${activity.completed ? 'Marcar como pendiente' : 'Marcar como completada'}">
@@ -3716,7 +4106,7 @@ function openActivityModal(activity = null) {
         document.getElementById('activityCompleted').checked = activity.completed;
     } else {
         // Modo nueva actividad
-        modalTitle.textContent = 'Nueva Actividad';
+        modalTitle.textContent = 'Nuevo Actividad';
         document.getElementById('activityDueDate').valueAsDate = new Date();
     }
     
@@ -3793,21 +4183,16 @@ function toggleActivityStatus(activityId) {
 
 // Filtrar actividades
 function filterActivities() {
-    const searchTerm = document.getElementById('activitySearch').value.toLowerCase();
     const responsibleFilter = document.getElementById('activityResponsibleFilter').value;
     
     let activities = JSON.parse(localStorage.getItem('activities') || '[]');
     
     // Aplicar filtros
     const filteredActivities = activities.filter(activity => {
-        // Filtro por búsqueda
-        const matchesSearch = activity.name.toLowerCase().includes(searchTerm) ||
-                          (activity.description && activity.description.toLowerCase().includes(searchTerm));
-        
         // Filtro por responsable
         const matchesResponsible = responsibleFilter === 'all' || activity.responsible === responsibleFilter;
         
-        return matchesSearch && matchesResponsible;
+        return matchesResponsible;
     });
     
     // Limpiar tabla
@@ -3833,6 +4218,7 @@ function filterActivities() {
 
 function clearAllAnimals() {
     if (confirm("¿Está seguro de que desea borrar todos los registros de animales?")) {
+        localStorage.removeItem('animals'); // Clear from localstorage too
         const animalCards = document.querySelector('#birthRegistration .animal-cards');
         if (animalCards) {
             animalCards.innerHTML = "";
@@ -3888,6 +4274,8 @@ function clearAllReportsRecords() {
             guiasFilesList.innerHTML = '<p class="empty-list-message">No hay guías registradas. Usa el botón "Subir Guía" para añadir documentación.</p>';
         }
         localStorage.removeItem('recentContentUpdates');
+        localStorage.removeItem('pacFiles');
+        localStorage.removeItem('guiaFiles');
         alert("Registros de informes borrados.");
     }
 }
@@ -4064,185 +4452,84 @@ function updateAllRecordsTab() {
     }
 }
 
-function initAnimalCardClickListeners() {
-    document.querySelectorAll('.animal-card').forEach(card => {
-        card.addEventListener('click', function(e) {
-            // Evitar que se propague el evento si se hizo clic en un botón
-            if (e.target.closest('.btn-icon') || e.target.closest('.animal-actions')) {
-                return;
-            }
-            
-            const animalId = this.querySelector('h3').textContent.replace('ID: ', '');
-            const category = this.querySelector('.animal-photo i').className.includes('piggy-bank') ? 'porcino' : 
-                            this.querySelector('.animal-photo i').className.includes('sheep') ? 'ovino' : 
-                            this.querySelector('.animal-photo i').className.includes('goat') ? 'caprino' : 'vacuno';
-            
-            const infoTexts = Array.from(this.querySelectorAll('.animal-info p'));
-            
-            // Extraer datos del animal
-            let breed = '', sex = '', age = '', weight = '', birthDate = '', motherCrotal = '', birthWeight = '', birthCondition = '';
-            
-            infoTexts.forEach(p => {
-                const text = p.textContent;
-                if (text.includes('Raza:')) {
-                    breed = text.replace('Raza:', '').trim();
-                } else if (text.includes('Sexo:')) {
-                    sex = text.replace('Sexo:', '').trim();
-                } else if (text.includes('Edad:')) {
-                    age = text.replace('Edad:', '').replace('años', '').trim();
-                } else if (text.includes('Peso:')) {
-                    weight = text.replace('Peso:', '').replace('kg', '').trim();
-                } else if (text.includes('Fecha Nacimiento:')) {
-                    birthDate = text.replace('Fecha Nacimiento:', '').trim();
-                } else if (text.includes('Madre:')) {
-                    motherCrotal = text.replace('Madre:', '').trim();
-                } else if (text.includes('Peso al Nacer:')) {
-                    birthWeight = text.replace('Peso al Nacer:', '').replace('kg', '').trim();
-                } else if (text.includes('Condición al Nacer:')) {
-                    birthCondition = text.replace('Condición al Nacer:', '').trim();
-                }
-            });
-            
-            // Verificar si es un registro de nacimiento
-            const isBirthRecord = this.closest('#birthRegistration') || 
-                                (birthDate && motherCrotal && birthWeight);
-            
-            // Llenar el formulario correspondiente
-            if (isBirthRecord) {
-                // Es un registro de nacimiento, llenar el formulario de nacimiento
-                document.getElementById('birthAnimalId').value = animalId;
-                document.getElementById('birthBreed').value = breed;
-                document.getElementById('birthAnimalCategory').value = category;
-                document.getElementById('birthAnimalSex').value = sex;
-                
-                if (birthDate) {
-                    document.getElementById('birthDateInput').value = convertToDateInputFormat(birthDate);
-                }
-                
-                document.getElementById('birthMotherCrotal').value = motherCrotal || '';
-                document.getElementById('birthWeightInput').value = birthWeight || '';
-                document.getElementById('birthConditionInput').value = birthCondition || 'normal';
-                
-                // Cambiar título del modal
-                const modalTitle = document.querySelector('#birthRegistrationModal h2');
-                if (modalTitle) {
-                    modalTitle.textContent = 'Editar Registro de Nacimiento';
-                }
-                
-                // Mostrar el modal de registro de nacimiento
-                document.getElementById('birthRegistrationModal').style.display = 'block';
-            } else {
-                // Es un animal regular, llenar el formulario de animal
-                document.getElementById('animalId').value = animalId;
-                document.getElementById('breed').value = breed;
-                document.getElementById('animalCategory').value = category;
-                document.getElementById('animalSex').value = sex;
-                document.getElementById('age').value = age;
-                document.getElementById('weight').value = weight;
-                
-                // Cambiar el título del modal
-                const modalTitle = document.querySelector('#animalModal h2');
-                if (modalTitle) {
-                    modalTitle.textContent = 'Editar Animal';
-                }
-                
-                // Marcar el formulario como edición
-                document.getElementById('animalForm').setAttribute('data-edit-mode', 'true');
-                document.getElementById('animalForm').setAttribute('data-card-id', this.id || '');
-                
-                // Mostrar el modal
-                document.getElementById('animalModal').style.display = 'block';
+function initAnimalCardListeners(card) {
+    if (!card) return;
+    
+    const deleteBtn = card.querySelector('.delete-animal');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const id = this.getAttribute('data-id') || card.id;
+            if (id) {
+                deleteAnimal(id);
             }
         });
+    }
+    
+    const editBtn = card.querySelector('.edit-animal, .edit-birth');
+    if (editBtn) {
+        editBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // Edit functionality handled in the card click event
+        });
+    }
+    
+    card.addEventListener('click', function(e) {
+        if (!e.target.closest('.btn-icon') && !e.target.closest('.animal-actions')) {
+            // Functionality to show animal details
+            const id = card.id;
+            const animalData = getAnimalById(id);
+            if (animalData) {
+                if (animalData.type === 'birth') {
+                    openBirthEditModal(animalData);
+                } else {
+                    openAnimalEditModal(animalData);
+                }
+            }
+        }
     });
 }
 
-function convertToDateInputFormat(dateString) {
-    const parts = dateString.split('/');
-    if (parts.length === 3) {
-        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-    }
-    return '';
+// Add helper function to get animal by ID
+function getAnimalById(id) {
+    if (!id) return null;
+    
+    const animals = JSON.parse(localStorage.getItem('animals') || '[]');
+    return animals.find(animal => animal.id === id) || null;
 }
 
 // ... existing code ...
 
-function initSectionEditor(sectionId) {
-  // Stub implementation for initializing section editor
-  console.log("initSectionEditor called for section:", sectionId);
-}
-
-function updateStorageDetails() {
-    var maxQuota = 5 * 1024 * 1024; 
-    var totalBytes = 0;
-    for (var i = 0; i < localStorage.length; i++) {
-        var key = localStorage.key(i);
-        var value = localStorage.getItem(key);
-        totalBytes += key.length + (value ? value.length : 0);
-    }
-    var usagePercentage = Math.min(100, (totalBytes / maxQuota) * 100);
-    var storageUsedElem = document.querySelector('.storage-used');
-    if (storageUsedElem) {
-        storageUsedElem.style.width = usagePercentage + "%";
-    }
-    var storageInfoElem = document.querySelector('.storage-info p');
-    if (storageInfoElem) {
-        storageInfoElem.innerHTML = "Estás utilizando <strong>" + usagePercentage.toFixed(0) + "%</strong> del almacenamiento disponible.";
-    }
-}
-
-// Llamar a updateStorageDetails al cargar la página para actualizar la información de almacenamiento
-updateStorageDetails();
-
-// Asignar la funcionalidad al botón "Gestionar espacio" para resetear/actualizar el almacenamiento
-var manageStorageBtn = document.getElementById('manageStorageBtn');
-if (manageStorageBtn) {
-    manageStorageBtn.addEventListener('click', function() {
-        updateStorageDetails();
-        alert("Información de almacenamiento actualizada.");
-    });
-}
-
 function loadFincasInSelectors() {
-    const fincaSelectors = document.querySelectorAll('#animalFinca, #birthFinca');
+    const fincas = JSON.parse(localStorage.getItem('fincas') || '[]');
+    const selects = document.querySelectorAll('#animalFinca, #birthFinca');
     
-    // Obtener todas las fincas desde localStorage o de donde corresponda
-    const fincaCards = document.querySelectorAll('.finca-card');
-    
-    // Limpiar selectores
-    fincaSelectors.forEach(selector => {
-        // Mantener solo la primera opción (Seleccionar finca...)
-        selector.innerHTML = '<option value="">Seleccionar finca...</option>';
+    selects.forEach(select => {
+        // Clear existing options except placeholder
+        while(select.options.length > 1) {
+            select.remove(1);
+        }
         
-        // Añadir cada finca al selector
-        fincaCards.forEach(card => {
-            const fincaName = card.querySelector('h3').textContent;
+        // Add new options
+        fincas.forEach(finca => {
             const option = document.createElement('option');
-            option.value = fincaName;
-            option.textContent = fincaName;
-            selector.appendChild(option);
+            option.value = finca.name;
+            option.textContent = finca.name;
+            select.appendChild(option);
         });
     });
 }
 
-// Definir navItems en un alcance más global
-const navItems = document.querySelectorAll('.sidebar nav ul li');
-
-navItems.forEach(item => {
-    item.addEventListener('click', function() {
-        const sectionId = this.getAttribute('data-section');
-        
-        if (sectionId === 'animals') {
-            loadFincasInSelectors();
-        }
-    });
-});
-
+// Update finca form submission handler to call this function
+const fincaForm = document.getElementById('fincaForm');
 if (fincaForm) {
     fincaForm.addEventListener('submit', function(e) {
-        // ... existing code for saving the farm ...
+        e.preventDefault();
         
-        // Después de guardar la finca y actualizar la interfaz
-        setTimeout(loadFincasInSelectors, 100);
+        // ... existing submission logic ...
+        
+        // After saving finca
+        loadFincasInSelectors();
+        loadFincas(); // Refresh fincas grid
     });
 }

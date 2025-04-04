@@ -76,6 +76,9 @@
                         <li data-section="home" class="active">
                             <i class="fas fa-home"></i> Inicio
                         </li>
+                        <li data-section="fincas">
+                            <i class="fas fa-tractor"></i> Fincas
+                        </li>
                         <li data-section="animals">
                             <i class="fas fa-cow"></i> Animales
                         </li>
@@ -87,9 +90,6 @@
                         </li>
                         <li data-section="activities">
                             <i class="fas fa-clipboard-list"></i> Actividades
-                        </li>
-                        <li data-section="fincas">
-                            <i class="fas fa-tractor"></i> Fincas
                         </li>
                         <li data-section="inventory">
                             <i class="fas fa-boxes"></i> Inventario
@@ -607,9 +607,6 @@
                         <button class="btn-primary" id="addActivityBtn">
                             <i class="fas fa-plus"></i> Nueva Actividad
                         </button>
-                        <div class="filter-group">
-                            <input type="text" placeholder="Buscar actividad" id="activitySearch">
-                        </div>
                         <button class="btn-danger" id="deleteAllActivitiesBtn">
                             <i class="fas fa-trash"></i> Borrar todos los registros
                         </button>
@@ -927,16 +924,6 @@
                         <button class="btn-primary" id="addInventoryBtn">
                             <i class="fas fa-plus"></i> Nuevo Artículo
                         </button>
-                        <div class="filter-group">
-                            <input type="text" id="inventorySearch" placeholder="Buscar por nombre o categoría">
-                            <select id="categoryFilter">
-                                <option value="all">Todas las categorías</option>
-                                <option value="alimentacion">Alimentación</option>
-                                <option value="medicamentos">Medicamentos</option>
-                                <option value="equipos">Equipos</option>
-                                <option value="suministros">Suministros</option>
-                            </select>
-                        </div>
                         <button class="btn-danger" id="deleteAllInventoryBtn">
                             <i class="fas fa-trash"></i> Borrar todos los registros
                         </button>
@@ -1019,9 +1006,6 @@
                                     </button>
                                     <input type="file" id="pacFileInput" style="display: none;" multiple>
                                 </div>
-                            </div>
-                            
-                            <div class="filter-group" style="margin-bottom: 1rem;">
                             </div>
                             
                             <div id="pacFilesList" class="uploaded-files">
