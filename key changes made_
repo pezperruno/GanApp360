@@ -1,0 +1,14 @@
+
+1. Added new sanitary tab in the template with proper upload  2. Updated handleFileUpload to properly categorize and save sanitization documents
+3. Added support for loading saved sanitization files on page load
+4. Includeds initiaization code in DOMContentLoaded event
+
+The changes a should now:
+- Show separate tab forn sanitization documents
+- Allow uploading multiple file uploads
+- Maintain persistent file lists between page refreshes
+- Support deleting individual files
+- Show appropriate empty state when no files are uploaded
+
+This matches the existing pattern used for the Oe and guide files while providing dedicated ect section for sanitation-related documents.
+
